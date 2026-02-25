@@ -80,15 +80,14 @@ We understand that "injecting" instructions into your AI can sound risky. Here i
 Every skill in this registry is audited for its footprint in the AI's context window. Our goal is **High-Density Logic, Low-Token Footprint**.
 
 | Metric             | Savings (vs. Heavy Prompt) | Avg. Footprint | Quality |
-| ------------------ | -------------------------: | -------------- | ------- |
-| **Global Average** |            **89% Savings** | `v1.0.3` | 10     | ~375 tokens    
+| ------------------ | -------------------------: | -------------- | ------- | ----------- |
+| **Global Average** |            **89% Savings** | `v1.0.3` | 10     | ~375 tokens    |
 
 #### 📜 Benchmark History
 
-| Version | Date | Skills | Avg Tokens | Savings (%) | Report |
-| --- | --- | --- | --- | --- | --- |
-| v1.7.3 | 2026-02-25 | 220 | 413 | 89% | [Report](benchmarks/archive/v1.7.3.md) |
-| v1.7.2 | 2026-02-25 | 220 | 413 | 89% | [Report](benchmarks/archive/v1.7.2.md) |
+| Version | Date       | Skills | Avg Tokens | Savings (%) | Report                                 |
+| ------- | ---------- | ------ | ---------- | ----------- | -------------------------------------- |
+| v1.7.2  | 2026-02-25 | 220    | 413        | 89%         | [Report](benchmarks/archive/v1.7.2.md) |
 
 ### Why this matters
 
@@ -291,11 +290,11 @@ The Agent Skills Standard is designed to be the universal language for engineeri
 
 ### 🔹 Registry Ecosystem (v1.7.2)
 
-| Category            | Key Modules                   | Version  | Skills | Avg. Footprint                                                                    |
-| :------------------ | :---------------------------- | :------- | :----- | :-------------------------------------------------------------------------------- |
+| Category            | Key Modules                   | Version  | Skills | Avg. Footprint |
+| :------------------ | :---------------------------- | :------- | :----- | :------------- |
 | **🌐 Common**       | SOLID, TDD, Anti-Patterns     | `v1.5.3` | 17     | ~524 tokens    |
 | **🗄️ Database**     | PostgreSQL, MongoDB, Redis    | `v1.0.1` | 3      | ~664 tokens    |
-| **🌐 Quality**      | BA, Jira, Zephyr, QA          | `v1.0.1` | 4      | `458` ![tokens](https://img.shields.io/badge/tokens-458-blue?style=flat-square)   |
+| **🌐 Quality**      | BA, Jira, Zephyr, QA          | `v1.0.1` | 4      | ~458 tokens    |
 | **💙 Flutter**      | Clean Arch, BLoC, Riverpod    | `v1.3.1` | 21     | ~422 tokens    |
 | **🎯 Dart**         | Idiomatic, Advanced Tooling   | `v1.0.4` | 3      | ~435 tokens    |
 | **☕ Java**         | Virtual Threads, Testing      | `v1.0.0` | 5      | ~522 tokens    |
@@ -308,7 +307,7 @@ The Agent Skills Standard is designed to be the universal language for engineeri
 | **🐹 Golang**       | Concurrency, API Design       | `v1.0.3` | 10     | ~375 tokens    |
 | **🐘 Kotlin**       | Coroutines, Flow, Tooling     | `v1.0.1` | 4      | ~453 tokens    |
 | **🅰️ Angular**      | Standalone, Signals           | `v1.1.1` | 15     | ~285 tokens    |
-| **🍃 Spring Boot**  | Security, Data, Microservices | `v1.0.2` | 10     | `369` ![tokens](https://img.shields.io/badge/tokens-369-green?style=flat-square)  |
+| **🍃 Spring Boot**  | Security, Data, Microservices | `v1.0.2` | 10     | ~369 tokens    |
 | **🤖 Android**      | Compose, DI, Perf, Testing    | `v1.0.3` | 22     | ~295 tokens    |
 | **🍎 Swift**        | Concurrency, SwiftUI, Test    | `v1.0.0` | 8      | ~354 tokens    |
 | **🍏 iOS**          | Arch, Nav, Perf, DI           | `v1.1.1` | 15     | ~411 tokens    |
