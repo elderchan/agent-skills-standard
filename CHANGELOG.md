@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Database Skills**: v1.0.1 (Patch)
 - **CLI/Server**: v1.7.2 (Patch)
 
-## [1.1.7] - 2026-02-24
+## [1.7.1] - 2026-02-24
 
 **Category**: Skill Standardization & Feedback Loop Hardening & Battle-Test Workflow
 
@@ -98,6 +98,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **🧪 Testing Enhancements**:
   - Created dedicated unit test suites for all new services.
   - Refactored existing tests to utilize Dependency Injection (DI) and robust mocking.
+
+<details>
+<summary>v1.6.x History</summary>
 
 ## [1.6.7] - 2026-02-24
 
@@ -324,6 +327,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed (CLI v1.5.2)
 
 - **`.skillsrc` Enhancement** - Improved initialization template with opt-in guidance for Quality Engineering skills.
+
+</details>
 
 <details>
 <summary>v1.5.x History</summary>
