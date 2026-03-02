@@ -5,6 +5,19 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.2] - 2026-03-02
+
+**Category**: Agent Detection Restoration & Rule Integrity
+
+### Fixed (CLI)
+
+- **🛡️ Agent Detection**: Restored the logic to only generate rule files if an agent is actually detected in the project (e.g., `.cursor`, `.clauderules`, etc.). This prevents polluting projects with unused configuration folders.
+- **🧪 Test Coverage**: Re-introduced and verified unit tests for agent detection skips and hits.
+
+### Versions
+
+- **CLI**: v1.8.2 (Patch)
+
 ## [1.8.1] - 2026-03-02
 
 **Category**: Agent Bridge Dynamic Path Correction & Logic Optimization

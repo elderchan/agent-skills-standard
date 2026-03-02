@@ -42,6 +42,18 @@ export class AgentBridgeService {
         `At the end of any multi-step task with user corrections, load and run **[common/session-retrospective](${prefix}common/session-retrospective/SKILL.md)** to capture skill gaps and prevent repeat rework.`,
       ].join('\\n');
 
+      // SAFETY: Only write if the agent is detected in the project
+      // This prevents creating unused directories.
+      let detected = false;
+      for (const file of config.detectionFiles) {
+        if (await fs.pathExists(path.join(rootDir, file))) {
+          detected = true;
+          break;
+        }
+      }
+
+      if (!detected) continue;
+
       const ruleFilePath = path.join(
         rootDir,
         config.ruleFile,

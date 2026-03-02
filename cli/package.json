@@ -1,6 +1,6 @@
 {
   "name": "agent-skills-standard",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "A CLI to manage and sync AI agent skills standard for Cursor, Claude, Copilot, Windsurf, and more.",
   "main": "dist/index.js",
   "bin": {
@@ -22,7 +22,7 @@
     "lint:check": "eslint \"src/**/*.ts\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:cov": "vitest run --coverage",
     "prepublishOnly": "pnpm build"
   },
   "keywords": [

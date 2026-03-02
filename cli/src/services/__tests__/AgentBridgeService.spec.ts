@@ -72,6 +72,36 @@ describe('AgentBridgeService', () => {
       expect(findCall('.roo/rules')).toBeDefined();
     });
 
+    it('should SKIP agents if their detection files do not exist', async () => {
+      const rootDir = '/root';
+      const agents = [Agent.Cursor, Agent.Roo];
+
+      // Mock pathExists to return FALSE
+      (fs.pathExists as any).mockResolvedValue(false);
+
+      await service.bridge(rootDir, agents);
+
+      expect(fs.outputFile).not.toHaveBeenCalled();
+    });
+
+    it('should WRITE agents if their detection files exist', async () => {
+      const rootDir = '/root';
+      const agents = [Agent.Cursor];
+
+      // Mock pathExists to return TRUE for .cursor detection
+      (fs.pathExists as any).mockImplementation(async (p: string) => {
+        if (p.endsWith('.cursor') || p.endsWith('.cursorrules')) return true;
+        return false;
+      });
+
+      await service.bridge(rootDir, agents);
+
+      expect(fs.outputFile).toHaveBeenCalledWith(
+        expect.stringContaining('.cursor/rules/agent-skill-standard-rule.mdc'),
+        expect.any(String),
+      );
+    });
+
     it('should ignore unknown agents', async () => {
       const rootDir = '/root';
       await service.bridge(rootDir, ['unknown-agent' as Agent]);
