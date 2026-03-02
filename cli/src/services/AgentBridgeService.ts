@@ -17,36 +17,30 @@ export class AgentBridgeService {
     const fileNameBase = 'agent-skill-standard-rule';
     const commonDescription =
       'Rule for Agent Skills Standard - Always consult AGENTS.md for consolidated project context and technical triggers.';
-    const commonBody = [
-      '# 🛠 Agent Skills Standard',
-      '',
-      'This project uses a modular skills library for specialized engineering tasks.',
-      '',
-      '> [!IMPORTANT]',
-      '> ALWAYS consult the consolidated index in **AGENTS.md** to identify relevant triggers before acting.',
-      '',
-      'The `AGENTS.md` file contains mapping between project files and the specific agent skills located in the respective agent-specific folders (e.g., `.cursor/skills`, `.claude/skills`).',
-      '',
-      '## Self-Learning Protocol',
-      '',
-      'At the end of any multi-step task with user corrections, load and run **[common/session-retrospective](/skills/common/session-retrospective/SKILL.md)** to capture skill gaps and prevent repeat rework.',
-    ].join('\n');
 
     for (const agentId of agents) {
       const config = getAgentDefinition(agentId);
       if (!config) continue;
 
-      // SAFETY: Only write if the agent is detected in the project
-      // This prevents creating unused directories.
-      let detected = false;
-      for (const file of config.detectionFiles) {
-        if (await fs.pathExists(path.join(rootDir, file))) {
-          detected = true;
-          break;
-        }
-      }
+      const relativeSkillsPath = path
+        .relative(config.ruleFile, config.path)
+        .replace(/\\/g, '/');
+      const prefix = relativeSkillsPath ? `${relativeSkillsPath}/` : '';
 
-      if (!detected) continue;
+      const commonBody = [
+        '# 🛠 Agent Skills Standard',
+        '',
+        'This project uses a modular skills library for specialized engineering tasks.',
+        '',
+        '> [!IMPORTANT]',
+        '> ALWAYS consult the consolidated index in **AGENTS.md** to identify relevant triggers before acting.',
+        '',
+        'The `AGENTS.md` file contains mapping between project files and the specific agent skills located in the respective agent-specific folders (e.g., `.cursor/skills`, `.claude/skills`).',
+        '',
+        '## Self-Learning Protocol',
+        '',
+        `At the end of any multi-step task with user corrections, load and run **[common/session-retrospective](${prefix}common/session-retrospective/SKILL.md)** to capture skill gaps and prevent repeat rework.`,
+      ].join('\\n');
 
       const ruleFilePath = path.join(
         rootDir,

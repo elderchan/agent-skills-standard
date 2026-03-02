@@ -18,7 +18,7 @@ program
   .description(
     'A CLI to manage and sync AI agent skills for Cursor, Claude, Copilot, Windsurf, and more.',
   )
-  .version('1.8.0');
+  .version('1.8.1');
 
 program
   .command('init')

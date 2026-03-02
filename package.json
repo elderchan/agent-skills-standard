@@ -1,6 +1,6 @@
 {
   "name": "agent-skills-standard-root",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "private": true,
   "packageManager": "pnpm@10.0.0",
   "pnpm": {
@@ -20,7 +20,7 @@
     "validate": "pnpm --filter ./cli validate",
     "validate:all": "pnpm --filter ./cli validate:all && pnpm audit:skills",
     "test": "pnpm --filter ./cli test",
-    "test:coverage": "pnpm --filter ./cli test:coverage",
+    "test:cov": "pnpm --filter ./cli test:coverage",
     "release-skill": "tsx scripts/release-skill.ts",
     "release-cli": "tsx scripts/release-cli.ts",
     "server:release": "tsx scripts/release-server.ts",

@@ -5,6 +5,20 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2026-03-02
+
+**Category**: Agent Bridge Dynamic Path Correction & Logic Optimization
+
+### Fixed (CLI)
+
+- **🔄 Dynamic Rule Links**: Fixed hardcoded `../skills/` links in generated agent rules. The self-learning protocol now uses a dynamically calculated relative path to the `/skills` folder, ensuring correct navigation for all agents (Cursor, Claude, Copilot, etc.).
+- **🧹 Logic Optimization**: Removed redundant agent detection check in `AgentBridgeService` to improve performance and consistency.
+- **🧪 Test Hardening**: Updated `AgentBridgeService.spec.ts` with specific assertions for dynamic pathing across different agent configurations.
+
+### Versions
+
+- **CLI**: v1.8.1 (Patch)
+
 ## [1.8.0] - 2026-03-02
 
 **Category**: Common Skills Gap Closure & CLI Smart Exclusions

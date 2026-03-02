@@ -291,7 +291,7 @@ If the CLI complains about configuration format:
 
 The Agent Skills Standard is designed to be the universal language for engineering standards.
 
-### 🔹 Registry Ecosystem (v1.8.0)
+### 🔹 Registry Ecosystem (v1.8.1)
 
 | Category            | Key Modules                   | Version  | Skills | Avg. Footprint |
 | :------------------ | :---------------------------- | :------- | :----- | :------------- |
