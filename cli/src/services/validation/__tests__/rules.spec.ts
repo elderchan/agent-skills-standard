@@ -61,7 +61,7 @@ describe('Validation Rules', () => {
 
     it('should fail if description is too long', async () => {
       const rule = new FrontmatterRule();
-      const longDesc = 'a'.repeat(201);
+      const longDesc = 'a'.repeat(301);
       const content = `---\nname: Test\ndescription: ${longDesc}\n---\nbody`;
       const result = await rule.validate(content);
       expect(result.passed).toBe(false);
@@ -91,6 +91,15 @@ describe('Validation Rules', () => {
       const content = '---\nname: Test\n---\n```\n- please do this\n```';
       const result = await rule.validate(content);
       expect(result.warnings).toHaveLength(0);
+    });
+
+    it('should work without frontmatter (line 77 branch)', async () => {
+      const rule = new InstructionsStyleRule();
+      const content = '- please use this';
+      const result = await rule.validate(content);
+      expect(result.warnings).toContain(
+        'Consider using imperative mood instead of conversational style in instructions',
+      );
     });
   });
 
