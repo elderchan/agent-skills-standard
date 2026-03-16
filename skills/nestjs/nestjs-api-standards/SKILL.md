@@ -52,3 +52,9 @@ Standardized API response patterns and common NestJS conventions.
   ```
 
 - **Docs**: Apply `@ApiBadRequestResponse({ type: ApiErrorResponse })` globally or per controller.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -59,3 +59,9 @@ Automated API documentation and OpenAPI standards.
   - **Code**: `@ApiProperty({ enum: MyEnum, enumName: 'MyEnum' })`.
 - **Grouping**: Segregate public vs. internal docs.
   - **Setup**: `SwaggerModule.createDocument(app, config, { include: [AdminModule] })`.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

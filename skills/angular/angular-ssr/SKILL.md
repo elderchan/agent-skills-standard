@@ -21,3 +21,9 @@ description: "Hydration, TransferState, and Prerendering standards. Use when imp
 ## References
 
 - [Hydration](references/hydration.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

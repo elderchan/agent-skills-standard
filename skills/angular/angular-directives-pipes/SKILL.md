@@ -21,3 +21,9 @@ description: "Composition patterns using HostDirectives and Pure Pipes. Use when
 ## References
 
 - [Composition](references/composition.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

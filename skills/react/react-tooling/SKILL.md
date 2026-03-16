@@ -32,3 +32,9 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 ```
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

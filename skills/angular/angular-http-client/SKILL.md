@@ -22,3 +22,9 @@ description: "Best practices for HttpClient, Interceptors, and API interactions.
 ## References
 
 - [Interceptors](references/interceptors.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

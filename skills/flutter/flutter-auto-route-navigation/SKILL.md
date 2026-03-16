@@ -36,3 +36,9 @@ See [references/REFERENCE.md](references/REFERENCE.md).
 ## Related Topics
 
 go-router-navigation | layer-based-clean-architecture
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

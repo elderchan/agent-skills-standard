@@ -53,3 +53,9 @@ const theme = cookieStore.get('theme');
 - **Colocation**: Keep component files, styles, and tests inside the route folder.
 - **Layouts**: Use Root Layout (`app/layout.tsx`) for `<html>` and `<body>` tags.
 - [**Self-Hosting Standard**](references/SELF_HOSTING.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

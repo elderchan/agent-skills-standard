@@ -34,3 +34,9 @@ Next.js has 4 distinct caching layers. Understanding them prevents stale data bu
 ## **Implementation Details**
 
 See [Cache Components & PPR](references/CACHE_COMPONENTS.md) for detailed key generation, closure constraints, and invalidation strategies.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -47,3 +47,9 @@ For the specific directory layout and layer definitions, see the reference docum
 - **Server Actions**: Place them in the `model/` folder of a Feature (e.g., `features/auth/model/actions.ts`).
 - **Data Access (DAL)**: Place logic in the `model/` folder of an Entity (e.g., `entities/user/model/dal.ts`).
 - **UI Components**: Base UI (shadcn) belongs in `shared/ui`. Feature-specific UI belongs in `features/*/ui`.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

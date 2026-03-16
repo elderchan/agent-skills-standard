@@ -30,3 +30,9 @@ Secure file upload handling with validation and storage patterns.
   1. Upload file.
   2. Push `FileUploadedEvent` to Queue (BullMQ).
   3. Worker downloads, resizes/converts, and re-uploads.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -29,3 +29,9 @@ description: "Standards for structured logging and observability in Golang. Use 
 ## References
 
 - [Slog Patterns](references/slog-patterns.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

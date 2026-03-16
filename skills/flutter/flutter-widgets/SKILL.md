@@ -36,3 +36,9 @@ class AppButton extends StatelessWidget {
 ## Related Topics
 
 performance | testing
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -28,3 +28,9 @@ Best practices for writing clean, maintainable Dart code.
 import 'models/user.dart'; // Good
 import 'package:app/models/user.dart'; // Avoid local absolute
 ```
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

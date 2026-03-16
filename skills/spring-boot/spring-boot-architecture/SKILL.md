@@ -44,3 +44,9 @@ description: "Standards for project structure and layering in Spring Boot 3+ app
 ## References
 
 - [Implementation Examples](references/implementation.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

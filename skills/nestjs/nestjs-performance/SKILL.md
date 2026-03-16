@@ -59,3 +59,9 @@ High-performance patterns and optimization techniques for NestJS applications.
   - **API Overhead Baseline**: Excellent (< 20ms), Poor (> 100ms - implies heavy synchronous processing or serialization blocking Node's event loop).
 - **Offloading**: Move CPU-heavy tasks (Image processing, Crypto) to `worker_threads`.
 - **Clustering**: For non-containerized environments, use `ClusterModule` to utilize all CPU cores. In K8s, prefer ReplicaSets.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -33,3 +33,9 @@ For specific library setups, see:
 2. **Font Optimization**: Use `next/font` to prevent Cumulative Layout Shift (CLS).
    - _Reference_: [Font Setup](references/implementation.md)
 3. **CLS Prevention**: Always specify `width`/`height` on images.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -71,3 +71,9 @@ Check for large metadata or constants impacting IDE performance and binary size.
 ## 📚 Reference Links
 
 - [Architecture Patterns & Remediation Protocols](references/PATTERNS.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

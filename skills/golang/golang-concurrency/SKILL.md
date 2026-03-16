@@ -32,3 +32,9 @@ description: "Standards for safe concurrent programming using Goroutines, Channe
 
 - [Concurrency Patterns](references/concurrency-patterns.md)
 - [Context Usage](references/context-usage.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

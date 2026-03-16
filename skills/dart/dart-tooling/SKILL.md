@@ -40,3 +40,9 @@ linter:
 ## Related Topics
 
 language | testing
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -72,3 +72,9 @@ Every test must follow Arrange-Act-Assert:
 - [AAA Example](references/aaa_example.md)
 - [TDD Patterns](references/tdd_patterns.md)
 - [Testing Anti-Patterns](references/testing_anti_patterns.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

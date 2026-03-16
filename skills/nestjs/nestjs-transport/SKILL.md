@@ -40,3 +40,9 @@ Microservices communication patterns and transport layer standards.
 
 - **Message DTOs**: Use `class-validator` just like HTTP.
   - **Config**: Apply `useGlobalPipes(new ValidationPipe({ transform: true }))` in the `MicroserviceOptions` setup, not just HTTP app setup.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

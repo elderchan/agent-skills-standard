@@ -26,3 +26,9 @@ See [references/REFERENCE.md](references/REFERENCE.md).
 ## Related Topics
 
 common/security-standards | layer-based-clean-architecture | performance
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -26,3 +26,9 @@ Centralize all data access (Database & External APIs) to ensure consistent secur
 ## Limitations
 
 - **Client Components**: Cannot import DAL files. Must use Server Actions or Route Handlers as bridges.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

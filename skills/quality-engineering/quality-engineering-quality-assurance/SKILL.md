@@ -29,3 +29,9 @@ description: "Standards for creating high-quality, granular manual test cases an
 ## 4. References
 
 - [Detailed Examples](references/test_case_standards.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

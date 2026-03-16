@@ -43,3 +43,9 @@ Logging, monitoring, and observability patterns for production applications.
 - **Terminus**: Implement explicit logic for "Liveness" (I'm alive) vs "Readiness" (I can take traffic).
   - **DB Check**: `TypeOrmHealthIndicator` / `PrismaHealthIndicator`.
   - **Memory Check**: Fail if Heap > 300MB (prevent crash loops).
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

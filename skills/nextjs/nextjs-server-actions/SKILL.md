@@ -65,3 +65,9 @@ Use `useActionState` (React 19/Next.js 15+) for state handling and `useFormStatu
 
 - **Closures**: Avoid defining actions inside components to prevent hidden closure encryption overhead and serialization bugs.
 - **Redirection**: Use `redirect()` for success navigation; it throws an error that Next.js catches to handle the redirect.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

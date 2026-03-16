@@ -35,3 +35,9 @@ Automates code quality checks, testing, and deployment to prevent regressions an
 ## Related Topics
 
 flutter/testing | dart/tooling
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

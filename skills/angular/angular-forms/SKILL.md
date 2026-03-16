@@ -21,3 +21,9 @@ description: "Standards for Typed Reactive Forms and Validators. Use when implem
 ## References
 
 - [Typed Forms](references/typed-forms.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

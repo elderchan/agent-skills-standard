@@ -59,3 +59,9 @@ Before applying optimizations, identify bottlenecks using:
 - **Loading Strategy**: Control when 3rd party scripts load.
   - `strategy="afterInteractive"` (Default): Google Analytics.
   - `strategy="lazyOnload"`: Chat widgets, low priority.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

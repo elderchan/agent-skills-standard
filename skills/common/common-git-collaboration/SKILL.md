@@ -45,3 +45,9 @@ Universal standards for effective version control, branching strategies, and tea
 ## 📚 References
 
 - [Clean Linear History & Rebase Examples](references/CLEAN_HISTORY.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

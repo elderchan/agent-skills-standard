@@ -38,3 +38,9 @@ Essential rules for maintaining proper code comments, READMEs, and technical doc
 - **Self-Documenting**: Use Swagger/OpenAPI for REST or specialized doc generators for your language.
 - **Examples**: Provide copy-pasteable examples for every major endpoint or utility.
 - **Contract First**: Define the interface before the implementation.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

@@ -66,3 +66,9 @@ For specific state management patterns, see:
 
 - [references/redux.md](references/redux.md)
 - [references/zustand.md](references/zustand.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

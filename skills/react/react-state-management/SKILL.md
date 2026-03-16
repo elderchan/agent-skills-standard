@@ -30,3 +30,9 @@ See [references/REFERENCE.md](references/REFERENCE.md).
 ## Related Topics
 
 hooks | component-patterns | performance
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

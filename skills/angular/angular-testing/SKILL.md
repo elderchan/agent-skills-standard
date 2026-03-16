@@ -21,3 +21,9 @@ description: "Standards for Component Test Harnesses and TestBed. Use when writi
 ## References
 
 - [Harness Pattern](references/harness-pattern.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

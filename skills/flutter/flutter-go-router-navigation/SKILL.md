@@ -50,3 +50,9 @@ final router = GoRouter(
 ## Related Topics
 
 layer-based-clean-architecture | auto-route-navigation | security
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

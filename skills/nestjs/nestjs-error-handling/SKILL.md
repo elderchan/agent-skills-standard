@@ -50,3 +50,9 @@ Global error handling and exception management patterns.
 
 - **Production**: **NEVER** expose stack traces in HTTP responses (`process.env.NODE_ENV === 'production'`).
 - **Sanitization**: Ensure `ApiException` payloads do not leak internal file paths or raw variable dumps.
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

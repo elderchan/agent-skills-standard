@@ -26,3 +26,9 @@ description: "Security best practices for Angular (XSS, CSP, Route Guards). Use 
 ## Related Topics
 
 common/security-standards | components
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

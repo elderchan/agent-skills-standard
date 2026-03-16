@@ -32,3 +32,9 @@ BlocBuilder<UserBloc, UserState>(
   builder: (context, state) => Text(state.name),
 )
 ```
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.

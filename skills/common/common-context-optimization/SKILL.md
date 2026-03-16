@@ -40,3 +40,9 @@ Manage the Attention Budget. Treat context as a scarce resource.
 
 - [Observation Masking Patterns](references/masking.md)
 - [Compaction Algorithms](references/compaction.md)
+
+
+## 🚫 Anti-Patterns
+
+- Do NOT use standard patterns if specific project rules exist.
+- Do NOT ignore error handling or edge cases.
