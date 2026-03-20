@@ -19,10 +19,7 @@ description: "Standards for efficient React functional components and hooks usag
 - **`useEffect`**: Sync with external systems ONLY. Cleanup required.
 - **`useRef`**: Mutable state without re-renders (DOM, timers, tracking).
 - **`useMemo`/`Callback`**: Measure first. Use for stable refs or heavy computation.
-- **Dependencies**: Exhaustive deps always. Fix logic, don't disable linter.
-- **Custom Hooks**: Extract shared logic. Prefix `use*`.
-- **Refs as Escape Hatch**: Access imperative APIs (focus, scroll).
-- **Stability**: Use `useLatest` pattern (ref) for event handlers to avoid dependency changes.
+- **Stability**: Use `useLatest` pattern (ref) for event handlers to avoid dependency changes; see the [useLatest ref pattern example](https://react.gg/hooks/use-latest-ref) for a reference implementation.
 - **Concurrency**: `useTransition` / `useDeferredValue` for non-blocking UI updates.
 - **Initialization**: Lazy state `useState(() => expensive())`.
 

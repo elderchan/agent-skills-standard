@@ -7,6 +7,33 @@ Authentication, authorization, and security patterns.
 - [**Authentication**](authentication.md) - JWT and session management.
 - [**Security Headers**](security-headers.md) - HTTP security headers configuration.
 
+## Input Validation (Zod)
+
+```typescript
+const UserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+type User = z.infer<typeof UserSchema>;
+
+// Validate at boundary
+const result = UserSchema.safeParse(req.body);
+if (!result.success) return res.status(400).json(result.error);
+```
+
+## Secure Cookie Options
+
+```typescript
+// In many Node deployments, production mode uses NODE_ENV === 'production';
+// verify your environment's convention (e.g., 'prod' vs 'production').
+const cookieOpts = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  maxAge: 60 * 60 * 1000, // 1 hour
+};
+```
+
 ## JWT Authentication Pattern
 
 ```typescript
