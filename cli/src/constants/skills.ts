@@ -18,69 +18,69 @@ export interface SkillDetection {
 export const SKILL_DETECTION_REGISTRY: Record<string, SkillDetection[]> = {
   [Framework.Flutter]: [
     {
-      id: 'riverpod-state-management',
+      id: 'flutter-riverpod-state-management',
       packages: ['flutter_riverpod', 'riverpod'],
     },
     {
-      id: 'bloc-state-management',
+      id: 'flutter-bloc-state-management',
       packages: ['flutter_bloc', 'bloc'],
     },
     {
-      id: 'auto-route-navigation',
+      id: 'flutter-auto-route-navigation',
       packages: ['auto_route'],
     },
     {
-      id: 'go-router-navigation',
+      id: 'flutter-go-router-navigation',
       packages: ['go_router'],
     },
     {
-      id: 'getx-navigation',
+      id: 'flutter-getx-navigation',
       packages: ['get'], // Special handling for exact match required
     },
     {
-      id: 'getx-state-management',
+      id: 'flutter-getx-state-management',
       packages: ['get'], // Special handling for exact match required
     },
     {
-      id: 'localization',
+      id: 'flutter-localization',
       packages: ['easy_localization'],
     },
     {
-      id: 'retrofit-networking',
+      id: 'flutter-retrofit-networking',
       packages: ['retrofit'],
     },
     {
-      id: 'dependency-injection',
+      id: 'flutter-dependency-injection',
       packages: ['get_it', 'injectable'],
     },
   ],
   [Framework.NestJS]: [
     {
-      id: 'caching',
+      id: 'nestjs-caching',
       packages: ['@nestjs/cache-manager', 'cache-manager'],
     },
     {
-      id: 'database',
+      id: 'nestjs-database',
       packages: ['@nestjs/typeorm', '@nestjs/prisma', '@nestjs/mongoose'],
     },
     {
-      id: 'security',
+      id: 'nestjs-security',
       packages: ['@nestjs/passport', 'passport', 'helmet'],
     },
   ],
   [Framework.Android]: [
     {
-      id: 'compose',
+      id: 'android-compose',
       packages: ['androidx.compose.ui'],
       files: ['android', 'build.gradle', 'build.gradle.kts'],
     },
     {
-      id: 'navigation',
+      id: 'android-navigation',
       packages: ['androidx.navigation:navigation-compose'],
       files: ['android', 'build.gradle', 'build.gradle.kts'],
     },
     {
-      id: 'legacy-navigation',
+      id: 'android-legacy-navigation',
       packages: [
         'androidx.navigation:navigation-fragment',
         'androidx.navigation:navigation-ui',
@@ -88,120 +88,120 @@ export const SKILL_DETECTION_REGISTRY: Record<string, SkillDetection[]> = {
       files: ['android', 'build.gradle', 'build.gradle.kts'],
     },
     {
-      id: 'di',
+      id: 'android-di',
       packages: ['hilt-android', 'dagger-android'],
       files: ['android', 'build.gradle', 'build.gradle.kts'],
     },
     {
-      id: 'persistence',
+      id: 'android-persistence',
       packages: ['androidx.room:room-runtime'],
       files: ['android', 'build.gradle', 'build.gradle.kts'],
     },
     {
-      id: 'networking',
+      id: 'android-networking',
       packages: ['retrofit'],
       files: ['android', 'build.gradle', 'build.gradle.kts'],
     },
     {
-      id: 'concurrency',
+      id: 'android-concurrency',
       packages: ['kotlinx-coroutines-android'],
       files: ['android', 'build.gradle', 'build.gradle.kts'],
     },
   ],
   [Framework.iOS]: [
     {
-      id: 'networking',
+      id: 'ios-networking',
       packages: ['Alamofire', 'Moya'],
       files: ['ios', 'Podfile', 'Package.swift'],
     },
     {
-      id: 'dependency-injection',
+      id: 'ios-dependency-injection',
       packages: ['Swinject', 'Resolver'],
       files: ['ios', 'Podfile', 'Package.swift'],
     },
     {
-      id: 'persistence',
+      id: 'ios-persistence',
       packages: ['Realm', 'CoreData', 'SQLite.swift'],
       files: ['ios', 'Podfile', 'Package.swift'],
     },
     {
-      id: 'state-management',
+      id: 'ios-state-management',
       packages: ['ComposableArchitecture', 'CombineRuntime'],
       files: ['ios', 'Podfile', 'Package.swift'],
     },
     {
-      id: 'ui-navigation',
+      id: 'ios-ui-navigation',
       packages: ['Coordinator', 'Router'],
       files: ['ios', 'Podfile', 'Package.swift'],
     },
   ],
   [Framework.ReactNative]: [
     {
-      id: 'navigation',
+      id: 'react-native-navigation',
       packages: ['@react-navigation/native'],
     },
     {
-      id: 'state-management',
+      id: 'react-native-state-management',
       packages: ['zustand', '@reduxjs/toolkit'],
     },
     {
-      id: 'deployment',
+      id: 'react-native-deployment',
       packages: ['react-native-code-push', 'expo-updates'],
     },
     {
-      id: 'security',
+      id: 'react-native-security',
       packages: ['react-native-keychain', 'react-native-ssl-pinning'],
     },
     {
-      id: 'performance',
+      id: 'react-native-performance',
       packages: ['react-native-fast-image'],
     },
   ],
   [Framework.Laravel]: [
     {
-      id: 'api',
+      id: 'laravel-api',
       packages: ['laravel/sanctum', 'laravel/passport'],
     },
     {
-      id: 'background-processing',
+      id: 'laravel-background-processing',
       packages: ['laravel/horizon'],
     },
     {
-      id: 'testing',
+      id: 'laravel-testing',
       packages: ['pestphp/pest', 'phpunit/phpunit'],
     },
     {
-      id: 'tooling',
+      id: 'laravel-tooling',
       packages: ['laravel/pint', 'laravel/sail'],
     },
     {
-      id: 'database-expert',
+      id: 'laravel-database-expert',
       packages: ['laravel/framework'], // Always present, but used for sub-skill mapping
     },
   ],
   [Framework.NextJS]: [
     {
-      id: 'pages-router',
+      id: 'nextjs-pages-router',
       packages: [],
       files: ['pages', 'src/pages'],
     },
     {
-      id: 'server-components',
+      id: 'nextjs-server-components',
       packages: [],
       files: ['app', 'src/app'],
     },
     {
-      id: 'server-actions',
+      id: 'nextjs-server-actions',
       packages: [],
       files: ['app', 'src/app'],
     },
     {
-      id: 'data-fetching',
+      id: 'nextjs-data-fetching',
       packages: [],
       files: ['app', 'src/app'],
     },
     {
-      id: 'i18n',
+      id: 'nextjs-i18n',
       packages: ['next-intl', 'react-intl', 'next-translate', 'i18next'],
       files: [
         'middleware.ts',
@@ -213,11 +213,11 @@ export const SKILL_DETECTION_REGISTRY: Record<string, SkillDetection[]> = {
   ],
   [Framework.React]: [
     {
-      id: 'styling',
+      id: 'react-styling',
       packages: ['tailwind', 'antd', 'sass', 'styled-components', 'emotion'],
     },
     {
-      id: 'state-management',
+      id: 'react-state-management',
       packages: [
         'redux',
         '@reduxjs/toolkit',
@@ -228,7 +228,7 @@ export const SKILL_DETECTION_REGISTRY: Record<string, SkillDetection[]> = {
       ],
     },
     {
-      id: 'testing',
+      id: 'react-testing',
       packages: [
         'jest',
         'vitest',
@@ -240,15 +240,15 @@ export const SKILL_DETECTION_REGISTRY: Record<string, SkillDetection[]> = {
   ],
   database: [
     {
-      id: 'postgresql',
+      id: 'database-postgresql',
       packages: ['pg', 'pgx', 'postgres', 'sequelize', 'typeorm', 'prisma'],
     },
     {
-      id: 'mongodb',
+      id: 'database-mongodb',
       packages: ['mongodb', 'mongoose'],
     },
     {
-      id: 'redis',
+      id: 'database-redis',
       packages: ['redis', 'ioredis', 'predis'],
     },
   ],

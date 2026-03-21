@@ -436,8 +436,8 @@ describe('ConfigService', () => {
 
       const category = config.skills.flutter as CategoryConfig;
       expect(category.exclude).toBeDefined();
-      expect(category.exclude).toContain('riverpod-state-management');
-      expect(category.exclude).not.toContain('bloc-state-management');
+      expect(category.exclude).toContain('flutter-riverpod-state-management');
+      expect(category.exclude).not.toContain('flutter-bloc-state-management');
     });
 
     it('should handle multiple categories in applyDependencyExclusions', () => {
@@ -451,14 +451,14 @@ describe('ConfigService', () => {
         custom_overrides: [],
       };
 
-      // nestjs networking requires @nestjs/passport
+      // nestjs security requires @nestjs/passport
       // database postgresql requires pg or postgres
       const projectDeps = new Set(['@nestjs/passport']);
 
       configService.applyDependencyExclusions(config, projectDeps);
 
-      expect(config.skills.nestjs?.exclude).not.toContain('networking');
-      expect(config.skills.database?.exclude).toContain('postgresql');
+      expect(config.skills.nestjs?.exclude).not.toContain('nestjs-security');
+      expect(config.skills.database?.exclude).toContain('database-postgresql');
     });
 
     it('should do nothing if category does not exist', () => {
@@ -549,14 +549,14 @@ describe('ConfigService', () => {
         skills: {
           android: {
             ref: 'v1.0.0',
-            exclude: ['networking', 'persistence'],
+            exclude: ['android-networking', 'android-persistence'],
           },
         },
         custom_overrides: [],
       };
 
-      // networking is detected by 'retrofit'
-      // persistence is detected by 'androidx.room:room-runtime'
+      // android-networking is detected by 'retrofit'
+      // android-persistence is detected by 'androidx.room:room-runtime'
       const projectDeps = new Set(['retrofit', 'some-other-dep']);
 
       // Mock fs.existsSync to satisfy mobile folder requirements
@@ -567,9 +567,9 @@ describe('ConfigService', () => {
         projectDeps,
       );
 
-      expect(reenabled).toContain('android/networking');
+      expect(reenabled).toContain('android/android-networking');
       const category = config.skills.android as CategoryConfig;
-      expect(category.exclude).toEqual(['persistence']);
+      expect(category.exclude).toEqual(['android-persistence']);
 
       vi.mocked(fs.existsSync).mockReset();
     });
@@ -581,7 +581,7 @@ describe('ConfigService', () => {
         skills: {
           android: {
             ref: 'v1.0.0',
-            exclude: ['networking'],
+            exclude: ['android-networking'],
           },
         },
         custom_overrides: [],
@@ -597,7 +597,7 @@ describe('ConfigService', () => {
         projectDeps,
       );
 
-      expect(reenabled).toContain('android/networking');
+      expect(reenabled).toContain('android/android-networking');
       const category = config.skills.android as CategoryConfig;
       expect(category.exclude).toBeUndefined();
 
@@ -625,9 +625,9 @@ describe('ConfigService', () => {
       expect(config.skills.database).toBeDefined();
       expect(config.skills.database?.ref).toBe('main');
       // Sub-skills not found should be excluded
-      expect(config.skills.database?.exclude).toContain('postgresql');
-      expect(config.skills.database?.exclude).toContain('mongodb');
-      expect(config.skills.database?.exclude).not.toContain('redis');
+      expect(config.skills.database?.exclude).toContain('database-postgresql');
+      expect(config.skills.database?.exclude).toContain('database-mongodb');
+      expect(config.skills.database?.exclude).not.toContain('database-redis');
     });
 
     it('should re-enable new category without exclusions if all dependencies strictly met', () => {
@@ -686,7 +686,7 @@ describe('ConfigService', () => {
         skills: {
           android: {
             ref: 'v1.0.0',
-            exclude: ['persistence'],
+            exclude: ['android-persistence'],
           },
         },
         custom_overrides: [],
@@ -701,7 +701,7 @@ describe('ConfigService', () => {
 
       expect(reenabled).toEqual([]);
       const category = config.skills.android as CategoryConfig;
-      expect(category.exclude).toEqual(['persistence']);
+      expect(category.exclude).toEqual(['android-persistence']);
     });
 
     it('should return empty if category or exclude list is missing', () => {
@@ -847,16 +847,16 @@ describe('ConfigService', () => {
           registry: 'url',
           agents: [],
           skills: {
-            nestjs: { ref: 'main', exclude: ['security'] },
+            nestjs: { ref: 'main', exclude: ['nestjs-security'] },
           },
         };
-        // @nestjs/passport matches security
+        // @nestjs/passport matches nestjs-security
         const projectDeps = new Set(['@nestjs/passport']);
         const reenabled = configService.reconcileDependencies(
           config,
           projectDeps,
         );
-        expect(reenabled).toContain('nestjs/security');
+        expect(reenabled).toContain('nestjs/nestjs-security');
       });
 
       it('should match framework-prefixed packages (nestjs-core matches nestjs)', () => {
@@ -864,7 +864,7 @@ describe('ConfigService', () => {
           registry: 'url',
           agents: [],
           skills: {
-            nestjs: { ref: 'main', exclude: ['networking'] },
+            nestjs: { ref: 'main', exclude: ['nestjs-caching'] },
           },
         };
         // Mock a detection for nestjs-core if it doesn't exist,
@@ -899,7 +899,7 @@ describe('ConfigService', () => {
           registry: 'url',
           agents: [],
           skills: {
-            nestjs: { ref: 'main', exclude: ['networking'] },
+            nestjs: { ref: 'main', exclude: ['nestjs-caching'] },
           },
         };
         const originalRegistry = { ...SKILL_DETECTION_REGISTRY };

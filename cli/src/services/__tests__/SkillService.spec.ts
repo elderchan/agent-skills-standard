@@ -26,7 +26,7 @@ describe('SkillService', () => {
       const projectDeps = new Set(['flutter_bloc']);
 
       mockRegistryService.getFrameworkSkills.mockResolvedValue([
-        'bloc-state-management',
+        'flutter-bloc-state-management',
         'unknown-skill',
       ]);
 
@@ -38,7 +38,7 @@ describe('SkillService', () => {
 
       expect(result).toHaveLength(2);
       expect(
-        result.find((s) => s.name === 'bloc-state-management')?.status,
+        result.find((s) => s.name === 'flutter-bloc-state-management')?.status,
       ).toBe('detected');
       expect(result.find((s) => s.name === 'unknown-skill')?.status).toBe(
         'no-rule',
@@ -65,7 +65,8 @@ describe('SkillService', () => {
         expect.arrayContaining(expectedSkills),
       );
       expect(
-        result.find((s) => s.name === 'riverpod-state-management')?.status,
+        result.find((s) => s.name === 'flutter-riverpod-state-management')
+          ?.status,
       ).toBe('detected');
     });
 
@@ -74,7 +75,7 @@ describe('SkillService', () => {
       const projectDeps = new Set(['some-random-dep']);
 
       mockRegistryService.getFrameworkSkills.mockResolvedValue([
-        'bloc-state-management',
+        'flutter-bloc-state-management',
       ]);
 
       const result = await skillService.getSkillsWithStatus(
