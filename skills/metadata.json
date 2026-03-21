@@ -232,14 +232,14 @@
       }
     },
     "nextjs": {
-      "version": "1.3.1",
-      "last_updated": "2026-03-16",
+      "version": "1.4.0",
+      "last_updated": "2026-03-20",
       "tag_prefix": "nextjs-v",
       "token_metrics": {
         "total_skills": 18,
-        "total_tokens": 8364,
-        "avg_tokens_per_skill": 465,
-        "largest_skill": "nextjs-architecture (839 tokens)"
+        "total_tokens": 8839,
+        "avg_tokens_per_skill": 491,
+        "largest_skill": "nextjs-architecture (909 tokens)"
       }
     },
     "common": {
@@ -247,9 +247,9 @@
       "last_updated": "2026-03-20",
       "tag_prefix": "common-v",
       "token_metrics": {
-        "total_skills": 25,
-        "total_tokens": 14045,
-        "avg_tokens_per_skill": 562,
+        "total_skills": 26,
+        "total_tokens": 14832,
+        "avg_tokens_per_skill": 570,
         "largest_skill": "common-accessibility (980 tokens)"
       }
     },
@@ -276,14 +276,14 @@
       }
     },
     "angular": {
-      "version": "1.3.1",
-      "last_updated": "2026-03-16",
+      "version": "1.3.0",
+      "last_updated": "2026-03-20",
       "tag_prefix": "angular-v",
       "token_metrics": {
-        "total_skills": 15,
-        "total_tokens": 4531,
-        "avg_tokens_per_skill": 302,
-        "largest_skill": "angular-architecture (480 tokens)"
+        "total_skills": 16,
+        "total_tokens": 5972,
+        "avg_tokens_per_skill": 373,
+        "largest_skill": "angular-architecture (524 tokens)"
       }
     },
     "kotlin": {
@@ -353,25 +353,25 @@
       }
     },
     "php": {
-      "version": "1.2.1",
-      "last_updated": "2026-03-16",
+      "version": "1.3.0",
+      "last_updated": "2026-03-20",
       "tag_prefix": "php-v",
       "token_metrics": {
         "total_skills": 7,
-        "total_tokens": 2234,
-        "avg_tokens_per_skill": 319,
-        "largest_skill": "php-error-handling (341 tokens)"
+        "total_tokens": 2176,
+        "avg_tokens_per_skill": 311,
+        "largest_skill": "php-security (335 tokens)"
       }
     },
     "laravel": {
-      "version": "1.2.1",
-      "last_updated": "2026-03-16",
+      "version": "1.3.0",
+      "last_updated": "2026-03-20",
       "tag_prefix": "laravel-v",
       "token_metrics": {
         "total_skills": 10,
-        "total_tokens": 3596,
-        "avg_tokens_per_skill": 360,
-        "largest_skill": "laravel-clean-architecture (428 tokens)"
+        "total_tokens": 3504,
+        "avg_tokens_per_skill": 350,
+        "largest_skill": "laravel-clean-architecture (407 tokens)"
       }
     },
     "database": {
