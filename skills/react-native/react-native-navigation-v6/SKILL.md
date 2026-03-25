@@ -1,6 +1,6 @@
 ---
 name: react-native-navigation-v6
-description: 'React Navigation 6+ standards for stack, tab, and deep linking. Use when implementing React Navigation stacks, tabs, or deep linking in React Native. (triggers: **/*Navigation*.tsx, src/navigation/**, navigation, react-navigation, stack, tab, drawer, deep link)'
+description: "Configure React Navigation 6+ stacks, tabs, and deep linking for React Native. Use when implementing React Navigation stacks, tabs, or deep linking in React Native. (triggers: **/*Navigation*.tsx, src/navigation/**, navigation, react-navigation, stack, tab, drawer, deep link)"
 ---
 
 # React Native Navigation
@@ -9,14 +9,24 @@ description: 'React Navigation 6+ standards for stack, tab, and deep linking. Us
 
 Use **React Navigation** (official solution).
 
-## Implementation Guidelines
+## Build Type-Safe Navigation Stacks
 
 - **Architecture**: Use **Native Stack (`createNativeStackNavigator`)** by default for native performance. Only use **JS Stack** for custom transitions.
+- **Typing**: Use **`NativeStackScreenProps`** for screens. **`CompositeScreenProps`** for nested Navigators.
+
+See [deep linking reference](references/deep-linking.md) for typed param lists and stack navigator setup.
+
+## Configure Deep Linking
+
 - **Deep Linking**: Use **prefix arrays** in `linking` config. Validate **Universal Links (iOS)** and **App Links (Android)**. Handle **unrecognized paths** with a 404 screen.
-- **Typing**: Use **`NativeStackScreenProps`** for screens. **`CompositeScreenProps`** for nested Navigators. **`useNavigation`** must be typed with `NativeStackNavigationProp`.
-- **Logic**: Use **Tab Navigators** for bottom navigation. **Drawer** for side menus. **Auth/App split** with conditional rendering in `NavigationContainer`.
+
+See [deep linking reference](references/deep-linking.md) for linking configuration with prefix arrays and fallback screens.
+
+## Implement Auth Flow
+
+- **Auth/App split**: Conditionally render Auth Stack vs App Stack in `NavigationContainer`. **Clear the navigation state** after logout.
+- **Logic**: Use **Tab Navigators** for bottom navigation. **Drawer** for side menus.
 - **Transitions**: Native-like feel via **`presentation: 'modal'`**. Custom `headerLeft/Right` in `options`.
-- **Redirection**: Handle **auth state changes** in the top-level Navigator (Auth Stack vs App Stack). **Clear the navigation state** after logout.
 - **Data Flow**: Use `route.params` for small IDs only. Use **global state (Zustand/RTK)** for complex data objects.
 
 ## Anti-Patterns

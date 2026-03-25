@@ -1,6 +1,6 @@
 ---
 name: php-testing
-description: 'Unit and integration testing standards for PHP applications. Use when writing PHPUnit unit tests or integration tests for PHP applications. (triggers: tests/**/*.php, phpunit.xml, phpunit, pest, mock, assert, tdd)'
+description: "Write unit and integration tests for PHP applications with PHPUnit and Pest. Use when writing PHPUnit unit tests or integration tests for PHP applications. (triggers: tests/**/*.php, phpunit.xml, phpunit, pest, mock, assert, tdd)"
 ---
 
 # PHP Testing
@@ -9,22 +9,26 @@ description: 'Unit and integration testing standards for PHP applications. Use w
 
 ## Structure
 
-```text
-tests/
-├── Unit/
-├── Integration/
-└── Feature/
-```
+See [implementation examples](references/implementation.md#directory-structure) for test directory layout.
 
-## Implementation Guidelines
+## Write Tests with PHPUnit and Pest
 
-- **Standards**: Use **`PHPUnit`** (9/10+) or **`Pest`**. Organize into **`Unit/`**, **`Integration/`**, and **`Feature/`**. Class names should extend **`TestCase`** (e.g., **`class OrderServiceTest extends TestCase`**).
-- **TDD Workflow**: Follow **Red-Green-Refactor**. **Red: write failing test** first for `createOrder()`, then **Green: implement minimal** logic to pass, then **Refactor**.
-- **Mocking**: Use **`createMock(PaymentService::class)`** for dependencies. Define behavior with **`expects($this->once())`** and **`method('charge')`** with `with(100)->willReturn(true)`. DO NOT mock simple Data Objects.
-- **Fluent Assertions**: **`assertSame checks type + value`** (`===`) — use **`assertSame('Test', $result->title)`** over `assertEquals` to avoid type coercion surprises. Also use **`assertCount()`** and **`assertMatchesRegularExpression()`**.
-- **Data Providers**: Use **`#[DataProvider('statusProvider')]`** (PHPUnit 10+) with a **`public static function statusProvider(): array`** or **`dataset`** (Pest).
+- **Standards**: Use **`PHPUnit`** (9/10+) or **`Pest`**. Organize into **`Unit/`**, **`Integration/`**, and **`Feature/`**. Class names should extend **`TestCase`**.
+- **TDD Workflow**: Follow **Red-Green-Refactor**. Write failing test first, implement minimal logic, then refactor.
+
+See [implementation examples](references/implementation.md#phpunit-service-test) for PHPUnit service test with mock.
+
+## Apply Assertions and Data Providers
+
+- **Fluent Assertions**: Use **`assertSame`** (`===`) over `assertEquals` to avoid type coercion. Also use **`assertCount()`** and **`assertMatchesRegularExpression()`**.
+- **Data Providers**: Use **`#[DataProvider('statusProvider')]`** (PHPUnit 10+) or **`dataset`** (Pest).
+
+See [implementation examples](references/implementation.md#pest-dataset-example) for Pest expressive syntax with datasets.
+
+## Isolate Test Dependencies
+
+- **Mocking**: Use **`createMock()`** for dependencies. DO NOT mock simple Data Objects.
 - **Isolation**: Ensure tests are **Independent** and **Repeatable**. DB tests must use **`Transactions`** or **`SQLite :memory:`**.
-- **Pest syntax**: Use **`it('creates an order', function() { ... })`** and **`expect($result->title)->toBe('Test')`** for cleaner, more readable tests.
 - **Coverage**: Aim for **`80%+`** line coverage. Use **`phpunit.xml`** to whitelist specific directories.
 - **Automation**: Run tests on every PR using **GitHub Actions** or **GitLab CI**.
 

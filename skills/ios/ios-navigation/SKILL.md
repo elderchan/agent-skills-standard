@@ -16,6 +16,8 @@ SwiftUI path-based navigation and deep linking.
 - **Universal Links**: Configure Associated Domains (`applinks`) in Entitlements.
 - **Tabs**: Maintain separate `NavigationStack` instances per `TabItem`.
 
+See [NavigationStack and deep linking examples](references/swiftui-navigation.md)
+
 ## Anti-Patterns
 
 - **No Force Unwrapping**: Use `guard let` when parsing URL components.

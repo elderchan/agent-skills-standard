@@ -1,39 +1,36 @@
 ---
 name: nextjs-state-management
-description: 'Best practices for managing state (Server URL vs Client Hooks). Use when managing URL state, client state, or global state in a Next.js application. (triggers: **/hooks/*.ts, **/store.ts, **/components/*.tsx, useState, useContext, zustand, redux)'
+description: "Apply best practices for managing URL, server, and client state in Next.js applications. Use when choosing between URL params, SWR/TanStack Query, Zustand, or Context for state, or when fixing hydration mismatches from localStorage. (triggers: **/hooks/*.ts, **/store.ts, **/components/*.tsx, useState, useContext, zustand, redux)"
 ---
 
 # State Management
 
 ## **Priority: P2 (MEDIUM)**
 
-## Implementation Guidelines
+## Decision Guide
 
-- **URL State**: Use the URL as the Single Source of Truth for shareable/persistent state. URL params: shareable across reloads and links. Access via `useSearchParams()` and update with `useRouter()`. Pattern: `const params = new URLSearchParams(searchParams); params.set('q', term); useRouter().replace(...)` .
-- **Server State**: Use **SWR** or **TanStack Query (React Query)** for caching and fetching server data. Avoid syncing server data manually into `useState`.
-- **Client State**: Use Zustand (`create<CartState>()((set) => ({ ... }))`) — use only in 'use client' components — or Jotai for complex, high-frequency UI state. Avoid Prop Drilling by leveraging Context API only for low-frequency data.
-- **Lifting State**: **Colocate state** as close as possible to the component. Only lift to the parent when state is shared between siblings.
-- **Next.js 15+ Integration**: Ensure state updates in **Client Components** don't conflict with server-side rendering logic. Manage **optimistic updates** with the **`useOptimistic`** hook.
-- **State Hydration**: Be careful when initializing state from `localStorage` in Client Components to avoid **Hydration Errors**. Wrap in `useEffect` or use a `mounted` flag.
+1. **Shareable/persistent?** Use URL state (`useSearchParams` + `useRouter`).
+2. **Server data?** Use SWR or TanStack Query. Never sync into `useState`.
+3. **Complex client UI?** Use Zustand (in `'use client'` only) or Jotai.
+4. **Simple local?** Use `useState`. Colocate as close to consumer as possible.
 
-### 2. URL-Driven State (Search/Filter)
+## URL-Driven State
 
-Use `useSearchParams` + `useRouter` to update URL params. See [URL State Pattern](references/url-state.md).
+See [implementation examples](references/implementation.md)
 
-### 3. Server State (TanStack Query / SWR)
+## Server State (SWR / TanStack Query)
 
-If you need "Live" data on the client (e.g., polling stock prices, chat), do not implement `useEffect` fetch manually. Use a library.
+See [implementation examples](references/implementation.md)
 
-```tsx
-// Automated caching, deduplication, and revalidation with refreshInterval
-const { data, error } = useSWR('/api/user', fetcher, {
-  refreshInterval: 30000,
-});
-```
+## Client State (Zustand)
+
+See [implementation examples](references/implementation.md)
+
+## Hydration Safety
+
+Wrap `localStorage` reads in `useEffect` or a `mounted` flag to avoid hydration mismatches. Manage optimistic updates with `useOptimistic` in Next.js 15+.
 
 ## Library Patterns
-
-For specific state management patterns, see:
 
 - [references/redux.md](references/redux.md)
 - [references/zustand.md](references/zustand.md)

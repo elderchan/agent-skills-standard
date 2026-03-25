@@ -1,20 +1,23 @@
 ---
 name: laravel-security
-description: 'Security standards for hardening Laravel applications. Use when securing authentication, authorization, input validation, or CSRF in Laravel. (triggers: app/Policies/**/*.php, config/*.php, policy, gate, authorize, env, config)'
+description: "Harden Laravel apps with Policies for model authorization, Gate-based RBAC, validated mass assignment, and CSRF protection. Use when creating authorization policies, securing env config access, or preventing mass assignment vulnerabilities. (triggers: app/Policies/**/*.php, config/*.php, policy, gate, authorize, env, config)"
 ---
 
 # Laravel Security
 
 ## **Priority: P0 (CRITICAL)**
 
-## Structure
+## Workflow: Secure a Resource
 
-```text
-app/
-├── Policies/           # Model-level permission
-└── Http/
-    └── Middleware/      # Custom security layers
-```
+1. **Generate policy** — `php artisan make:policy PostPolicy --model=Post`.
+2. **Implement policy methods** — Return `bool` for `view`, `update`, `delete` actions.
+3. **Authorize in controller** — Call `$this->authorize('update', $post)`.
+4. **Add Gate bypass** — Define `Gate::before()` for admin users in `AuthServiceProvider`.
+5. **Validate inputs** — Use Form Request with `$request->validated()` for `Model::create()`.
+
+## Policy Example
+
+See [implementation examples](references/implementation.md#policy-example) for Policy class with controller authorization.
 
 ## Implementation Guidelines
 

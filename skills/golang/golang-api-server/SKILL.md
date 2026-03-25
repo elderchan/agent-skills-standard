@@ -1,36 +1,34 @@
 ---
 name: golang-api-server
-description: "Standards for building HTTP services, REST APIs, and middleware in Golang. Use when building Go HTTP servers, REST APIs, or custom middleware. (triggers: cmd/server/*.go, internal/adapter/handler/**, http server, rest api, gin, echo, middleware)"
+description: "Build HTTP services, REST APIs, and middleware in Go. Use when building Go HTTP servers, REST APIs, or custom middleware. (triggers: cmd/server/*.go, internal/adapter/handler/**, http server, rest api, gin, echo, middleware)"
 ---
 
-# Golang API Server Standards
+# Golang API Server
 
 ## **Priority: P0 (CRITICAL)**
 
 ## Router Selection
 
-- **Standard Lib (`net/http`)**: Use for simple services or when zero deps is required. Use `http.ServeMux` (Go 1.22+ has decent routing).
-- **Echo (`labstack/echo`)**: Recommended for production REST APIs. Excellent middleware support, binding, and error handling.
+- **Standard Lib (`net/http`)**: Use for simple services or zero-dependency requirements. `http.ServeMux` (Go 1.22+) has method-based routing.
+- **Echo (`labstack/echo`)**: Recommended for production REST APIs with middleware, binding, and error handling.
 - **Gin (`gin-gonic/gin`)**: High performance alternative.
 
-## Guidelines
+## Implementation Workflow
 
-- **Graceful Shutdown**: MUST implement graceful shutdown to handle in-flight requests on termination (SIGINT/SIGTERM).
-- **DTOs**: Separate Domain structs from API Request/Response structs. Map between them.
-- **Middleware**: Use middleware for cross-cutting concerns (Logging, Recovery, CORS, Auth, Tracing).
-- **Health Checks**: Always include `/health` and `/ready` endpoints.
-- **Content-Type**: Enforce `application/json` for REST APIs.
+1. **Choose router** — Select based on complexity needs (stdlib for simple, Echo/Gin for production).
+2. **Separate concerns** — Handlers parse requests, call services, and format responses. No business logic in handlers.
+3. **Add middleware** — Use middleware for cross-cutting concerns (Logging, Recovery, CORS, Auth, Tracing).
+4. **Include health endpoints** — Always expose `/health` and `/ready` endpoints.
+5. **Enforce content types** — Require `application/json` for REST APIs.
+6. **Implement graceful shutdown** — Handle SIGINT/SIGTERM to drain in-flight requests.
 
-## Middleware Pattern
-
-- Standard: `func(next http.Handler) http.Handler`
-- Echo implementation: `func(next echo.HandlerFunc) echo.HandlerFunc`
+See [graceful shutdown example](references/graceful-shutdown.md) and [Echo handler patterns](references/middleware-patterns.md)
 
 ## Anti-Patterns
 
-- **No business logic in handlers**: Parse request → call service → format response only.
-- **No global router vars**: Pass router instance via constructor or DI.
-- **No missing graceful shutdown**: Always handle SIGTERM to drain in-flight requests.
+- ❌ Business logic in handlers — parse request, call service, format response only
+- ❌ Global router variables — pass router instance via constructor or DI
+- ❌ Missing graceful shutdown — always handle SIGTERM to drain in-flight requests
 
 ## References
 

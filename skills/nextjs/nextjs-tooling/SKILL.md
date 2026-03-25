@@ -1,30 +1,28 @@
 ---
 name: nextjs-tooling
-description: 'Ecosystem optimization, deployment, and developer flow. Use when configuring Next.js build optimization, deployment settings, or developer tooling. (triggers: next.config.js, package.json, Dockerfile, turbopack, output, standalone, lint, telemetry)'
+description: "Configure Next.js build tooling, deployment, and developer workflow. Use when setting up Turbopack, standalone Docker output, bundle analysis, CI caching, environment variable validation, or ESLint integration for Next.js projects. (triggers: next.config.js, package.json, Dockerfile, turbopack, output, standalone, lint, telemetry)"
 ---
 
 # Next.js Tooling
 
 ## **Priority: P2 (MEDIUM)**
 
-## Structure
+## Standalone Docker Config
 
-```text
-project/
-├── .next/              # Build artifacts
-├── next.config.js      # Advanced config
-└── .eslintrc.json      # Next plugins
-```
+See [implementation examples](references/implementation.md)
+
+## Environment Variable Validation
+
+See [implementation examples](references/implementation.md)
 
 ## Implementation Guidelines
 
-- **Build Architecture**: Use **`Turbopack`** (modern) or **`Webpack`** (legacy). Enable **`--turbo`** for faster incremental development.
-- **Minification**: Ensure **`output: 'standalone'`** is set in `next.config.js` for optimized **Docker** deployments. Use **`ProGuard` / `Uglify`** equivalents for asset shrinking.
-- **Linting**: Mandate **`next lint`** (Next.js ESLint plugin) and **`tsc` (typecheck)** in CI/CD pipelines.
-- **Asset Optimization**: Inspect size with **`@next/bundle-analyzer`**. Optimize images via **`next/image`** and remove unused dependencies.
-- **Telemetry**: Opt-out via **`next telemetry disable`** if privacy is required.
-- **Environment**: Use **`.env`** management in Next.js (Server only vs `NEXT_PUBLIC_*`). Validate schemas with **Zod** at runtime.
-- **CI/CD**: Cache the **`.next/cache`** folder in CI for 50%+ faster build times.
+- **Build**: Use Turbopack (`next dev --turbo`) for faster incremental builds; Webpack for legacy.
+- **Linting**: Mandate `next lint` (eslint-plugin-next) and `tsc` in CI/CD.
+- **Bundle Analysis**: Inspect with `@next/bundle-analyzer`. Remove unused dependencies.
+- **Telemetry**: Opt-out via `next telemetry disable` if privacy is required.
+- **Environment**: Server-only vars vs `NEXT_PUBLIC_*`. Validate with Zod at runtime.
+- **CI/CD**: Cache `.next/cache` in CI for 50%+ faster builds.
 
 ## Anti-Patterns
 

@@ -1,38 +1,28 @@
 ---
 name: ios-networking
-description: 'Standards for URLSession, Alamofire, and API communication. Use when implementing URLSession networking, Alamofire, or API clients in iOS. (triggers: **/*Service.swift, **/*API.swift, **/*Client.swift, URLSession, Alamofire, Moya, URLRequest, URLComponents, Codable)'
+description: "Build API clients with URLSession, Alamofire, and Codable. Use when implementing URLSession networking, Alamofire, or API clients in iOS. (triggers: **/*Service.swift, **/*API.swift, **/*Client.swift, URLSession, Alamofire, Moya, URLRequest, URLComponents, Codable)"
 ---
 
-# iOS Networking Standards
+# iOS Networking
 
 ## **Priority: P0**
 
-## Implementation Guidelines
+## Implementation Workflow
 
-### URLSession (Native)
+1. **Choose networking layer** — Use native `URLSession` with async/await for simple apps; `Alamofire` for production APIs with interceptors.
+2. **Build URLs safely** — Use `URLComponents` and `URLQueryItem`; never use string interpolation for URL parameters.
+3. **Decode with Codable** — Use `Codable` for all JSON mapping. Prefer `snake_case` key decoding strategies.
+4. **Add auth interceptor** — Use `RequestInterceptor` to inject `Authorization: Bearer <token>` on all requests.
+5. **Handle token refresh** — On 401, use `RequestInterceptor.onRetry` to call `refreshToken()` and retry.
+6. **Pin certificates** — Use `ServerTrustManager` or `TrustKit` for production-grade security.
 
-- **Tasks**: Use `dataTaskPublisher` (Combine) or **async/await** (e.g., `let (data, response) = await URLSession.shared.data(...)`).
-- **Configuration**: Use `URLSessionConfiguration.default` for standard tasks and `ephemeral` for private browsing/clearing cache.
-- **Request Building**: Use **`URLComponents` and `URLQueryItem`** to build URLs safely with parameters. **Never use string interpolation** for URL parameters.
-
-### Alamofire (Standard Third-Party)
-
-- **Session**: Maintain a singleton or DI-injected `Session` instance.
-- **Request**: Use **`.validate()`** to automatically check for **200..299** status codes.
-- **Encoding**: Use `JSONParameterEncoder.default` for body parameters.
-- **Retriers**: Handle a **401 token refresh** with a `RequestInterceptor`. Use `onRetry` to call the `refreshToken()` API.
-
-### Best Practices
-
-- **Codable**: Use **Codable** for all JSON decoding/mapping. Prefer `snake_case` strategies for API data consistency.
-- **Bearer Token Auth**: Use **RequestInterceptor** to add the **Bearer header** (`Authorization: Bearer <token>`) to all API requests.
-- **SSL Pinning**: Implement using **ServerTrustManager** or `TrustKit` for production-grade security.
+See [URLSession and Alamofire implementation examples](references/implementation.md)
 
 ## Anti-Patterns
 
-- **No UI updates in background task**: Always dispatch to MainActor or main thread.
-- **No manual JSONSerialization**: Use **Codable** and `JSONDecoder`.
-- **No indefinite wait**: Set a reasonable timeoutInterval (30s default).
+- ❌ UI updates from background thread — always dispatch to `@MainActor` or main queue
+- ❌ Manual `JSONSerialization` — use `Codable` and `JSONDecoder`
+- ❌ No timeout set — always set a reasonable `timeoutInterval` (30s default)
 
 ## References
 

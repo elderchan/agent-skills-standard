@@ -1,6 +1,6 @@
 ---
 name: flutter-auto-route-navigation
-description: "Typed routing, nested routes, and guards using auto_route. Use when implementing typed navigation, nested routes, or route guards with auto_route in Flutter. (triggers: **/router.dart, **/app_router.dart, AutoRoute, AutoRouter, router, guards, navigate, push)"
+description: "Implement typed routing, nested routes, and guards using auto_route. Use when adding typed navigation, nested routes, or route guards with auto_route in Flutter. (triggers: **/router.dart, **/app_router.dart, AutoRoute, AutoRouter, router, guards, navigate, push)"
 ---
 
 # AutoRoute Navigation
@@ -13,20 +13,24 @@ Type-safe routing system with code generation using `auto_route`.
 
 ```text
 core/router/
-├── app_router.dart # Router configuration
-└── app_router.gr.dart # Generated routes
+├── app_router.dart       # Router configuration
+└── app_router.gr.dart    # Generated routes
 ```
 
-## Implementation Guidelines
+## Implementation Workflow
 
-- **@RoutePage**: Annotate all screen/page widgets with `@RoutePage()`.
-- **Router Config**: Extend `_$AppRouter` and annotate with `@AutoRouterConfig`.
-- **Typed Navigation**: Use generated route classes (e.g., `HomeRoute()`). Never use strings.
-- **Nested Routes & Tabs**: Use `children` in `AutoRoute` for tabs. When navigating to a route with nested tabs, use the `children` parameter to define the initial active sub-route (e.g., `context.navigateTo(OrdersTabRoute(children: [ViewByOrdersPageRoute()]))`).
-- **Guards**: Implement `AutoRouteGuard` for authentication/authorization logic.
+1. **Annotate pages** — Mark all screen/page widgets with `@RoutePage()`.
+2. **Configure router** — Extend `_$AppRouter` and annotate with `@AutoRouterConfig`.
+3. **Navigate with types** — Use generated route classes (e.g., `HomeRoute()`). Never use strings.
+4. **Add guards** — Implement `AutoRouteGuard` for authentication/authorization logic.
+5. **Handle parameters** — Constructors of `@RoutePage` widgets automatically become route parameters.
+6. **Prefer declarative calls** — Use `context.pushRoute()` or `context.replaceRoute()`.
 
-- **Parameters**: Constructors of `@RoutePage` widgets automatically become route parameters.
-- **Declarative**: Prefer `context.pushRoute()` or `context.replaceRoute()`.
+### Nested Routes & Tabs
+
+Use `children` in `AutoRoute` for tabs. Pass the `children` parameter to define the initial active sub-route.
+
+See [implementation examples](references/implementation.md) for nested route navigation and router configuration patterns.
 
 ## Reference & Examples
 

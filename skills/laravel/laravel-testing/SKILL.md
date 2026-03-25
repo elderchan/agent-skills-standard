@@ -1,20 +1,23 @@
 ---
 name: laravel-testing
-description: 'Automated testing standards with Pest and PHPUnit. Use when writing Pest or PHPUnit feature/unit tests in Laravel applications. (triggers: tests/**/*.php, phpunit.xml, feature, unit, mock, factory, sqlite)'
+description: "Write Pest feature tests with RefreshDatabase, mock external services, and create test data with Eloquent Factories in Laravel. Use when adding HTTP tests, configuring SQLite in-memory test database, or mocking payment services. (triggers: tests/**/*.php, phpunit.xml, feature, unit, mock, factory, sqlite)"
 ---
 
 # Laravel Testing
 
 ## **Priority: P1 (HIGH)**
 
-## Structure
+## Workflow: Test a New Feature
 
-```text
-tests/
-├── Feature/            # Integration/HTTP tests
-├── Unit/               # Isolated logic tests
-└── TestCase.php
-```
+1. **Generate factory** — `php artisan make:factory PostFactory --model=Post`.
+2. **Write feature test** — Use Pest with `RefreshDatabase` for isolation.
+3. **Mock externals** — Use `$this->mock(Service::class)` for third-party calls.
+4. **Assert response** — Chain `assertStatus()`, `assertJson()`, `assertJsonStructure()`.
+5. **Run with SQLite** — Set `DB_CONNECTION=sqlite` and `DB_DATABASE=:memory:` in `phpunit.xml`.
+
+## Pest Feature Test Example
+
+See [implementation examples](references/implementation.md#pest-feature-test-example) for Pest feature tests and test directory structure.
 
 ## Implementation Guidelines
 

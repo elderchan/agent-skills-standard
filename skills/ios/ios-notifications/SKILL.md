@@ -17,6 +17,8 @@ Push notifications using UserNotifications framework and APNs.
 - **APNs**: Register for remote notifications in `AppDelegate`.
 - **Badges**: Manage app icon badges manually (set to 0 to clear).
 
+See [APNs registration and permission examples](references/implementation.md)
+
 ## Anti-Patterns
 
 - **No Unconditional Requests**: Explain value proposition before system dialog.

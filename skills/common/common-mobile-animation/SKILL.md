@@ -1,6 +1,6 @@
 ---
 name: common-mobile-animation
-description: "Motion design principles for mobile apps. Covers timing curves, transitions, gestures, and performance-conscious animations. (triggers: **/*_page.dart, **/*_screen.dart, **/*.swift, **/*Activity.kt, **/*Screen.tsx, Animation, AnimationController, Animated, MotionLayout, transition, gesture)"
+description: "Apply motion design principles for mobile apps covering timing curves, transitions, gestures, and performance-conscious animations. Use when implementing screen transitions, gesture-driven interactions, shared-element animations, or optimizing animation frame rates on iOS, Android, or Flutter. (triggers: **/*_page.dart, **/*_screen.dart, **/*.swift, **/*Activity.kt, **/*Screen.tsx, Animation, AnimationController, Animated, MotionLayout, transition, gesture)"
 ---
 
 # Mobile Animation
@@ -11,27 +11,37 @@ Native-feeling motion design. Optimize for 60fps and platform conventions.
 
 ## Timing Standards
 
-- **Short**: 100-150ms (Toggles, cell press)
-- **Medium**: 250-350ms (Nav, modals)
-- **Long**: 400-600ms (Shared element, complex state)
-- **Limit**: Never >600ms.
+| Duration | Range | Use Case |
+|----------|-------|----------|
+| Short | 100-150ms | Toggles, cell press |
+| Medium | 250-350ms | Navigation, modals |
+| Long | 400-600ms | Shared element, complex state |
 
-## Guidelines
+**Hard limit**: Never exceed 600ms for any animation.
 
-- **Easing**: Use `Curves.fastOutSlowIn` (Material) or `easeInOut` (iOS). Avoid `linear`.
-- **Performance**: Animate `transform` (Scale/Translation) and `opacity`. Avoid `width`/`height`.
-- **Gestures**: Implement `onPan` / `interactivePopGesture` for fluid UX.
-- **Optimization**: Use `FadeTransition` / `SlideTransition` over `AnimatedBuilder` for simple cases.
+## Workflow
 
-[Animation Patterns](references/animation-patterns.md)
+1. **Choose duration** from the timing table based on interaction type.
+2. **Select easing curve** per platform — `Curves.fastOutSlowIn` (Material) or `easeInOut` (iOS). Never use `linear`.
+3. **Animate GPU-friendly properties** (`transform`, `opacity`). Avoid `width`/`height` which trigger layout.
+4. **Wire gestures** using `onPan` / `interactivePopGesture` for fluid, interruptible UX.
+5. **Verify frame rate** in profiler — target 60fps with no jank frames.
+
+See [implementation examples](references/implementation.md) for Flutter and iOS animation patterns.
+
+## References
+
+- [Animation Patterns](references/animation-patterns.md)
 
 ## Anti-Patterns
 
-- **No Linear Easing**: Feels robotic.
-- **No Layout Trashing**: Avoid animating properties that trigger layout (width, padding).
-- **No Memory Leaks**: Always `dispose()` AnimationControllers.
-- **No Blocking UI**: Run heavy calculations outside animation frames.
+- **No linear easing**: Feels robotic; always use platform-standard curves.
+- **No layout thrashing**: Avoid animating properties that trigger layout (width, padding).
+- **No memory leaks**: Always `dispose()` AnimationControllers in Flutter; invalidate timers in iOS.
+- **No blocking UI**: Run heavy calculations outside animation frames.
 
 ## Related Topics
 
-mobile-ux-core | mobile-performance | flutter/animations
+- [common-mobile-ux-core](../common-mobile-ux-core/SKILL.md)
+- [flutter-performance](../../flutter/flutter-performance/SKILL.md)
+- [common-performance-engineering](../common-performance-engineering/SKILL.md)

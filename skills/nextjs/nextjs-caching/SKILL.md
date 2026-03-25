@@ -1,6 +1,6 @@
 ---
 name: nextjs-caching
-description: 'The 4 layers of caching in Next.js. Use when configuring request memoization, data cache, full-route cache, or router cache in Next.js. (triggers: **/page.tsx, **/layout.tsx, **/action.ts, unstable_cache, revalidateTag, Router Cache, Data Cache)'
+description: "Configure the 4 caching layers in Next.js: request memoization, data cache, full-route cache, and router cache. Use when setting revalidation strategies, invalidating cached data with tags, or diagnosing stale data bugs. (triggers: **/page.tsx, **/layout.tsx, **/action.ts, unstable_cache, revalidateTag, Router Cache, Data Cache)"
 ---
 
 # Caching Architecture
@@ -8,6 +8,18 @@ description: 'The 4 layers of caching in Next.js. Use when configuring request m
 ## **Priority: P1 (HIGH)**
 
 Next.js has 4 distinct caching layers. Understanding them prevents stale data bugs.
+
+## Workflow: Configure Caching for a Feature
+
+1. **Choose cache strategy** — SSG (`force-cache`), ISR (`revalidate: N`), or SSR (`no-store`).
+2. **Tag cacheable fetches** — Add `next: { tags: ['posts'] }` to fetch options.
+3. **Invalidate on mutation** — Call `revalidateTag('posts')` in Server Actions.
+4. **Deduplicate requests** — Wrap shared data fetches with React `cache()`.
+5. **Clear client cache** — Use `router.refresh()` after client-side mutations.
+
+## Cache Invalidation Example
+
+See [implementation examples](references/implementation.md)
 
 ## Implementation Guidelines
 

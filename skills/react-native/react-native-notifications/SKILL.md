@@ -16,6 +16,8 @@ Push notifications using React Native Firebase or Expo Notifications.
 - **Lifecycle**: Handle Foreground (`onMessage`), Background (`onNotificationOpenedApp`), and Quit (`getInitialNotification`) states.
 - **Permissions**: Prime users before requesting system authorization.
 
+See [implementation examples](references/implementation.md) for a complete FCM handler setup with permission request and lifecycle handlers.
+
 ## Anti-Patterns
 
 - **No Unconditional Requests**: Spamming permission dialogs leads to high denial rates.

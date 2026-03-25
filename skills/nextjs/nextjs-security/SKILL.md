@@ -1,20 +1,23 @@
 ---
 name: nextjs-security
-description: 'Core security standards for App Router and Server Actions. Use when securing Next.js App Router routes, Server Actions, or API endpoints. (triggers: app/**/actions.ts, middleware.ts, action, boundary, sanitize, auth, jose)'
+description: "Secure Next.js App Router with middleware auth, Server Action validation, CSP headers, and taint APIs. Use when adding authentication middleware, validating Server Action inputs with Zod, or preventing secret leakage to client bundles. (triggers: app/**/actions.ts, middleware.ts, action, boundary, sanitize, auth, jose)"
 ---
 
 # Next.js Security
 
 ## **Priority: P0 (CRITICAL)**
 
-## Structure
+## Workflow: Secure a Next.js App
 
-```text
-app/
-├── lib/
-│   └── validation.ts   # Shared Zod schemas
-└── middleware.ts       # Auth & Headers
-```
+1. **Add auth middleware** — Create `middleware.ts` to verify JWT/session on protected routes.
+2. **Validate Server Actions** — Parse all inputs with Zod schemas; call `await auth()` first.
+3. **Set security headers** — Add CSP, HSTS, X-Frame-Options in middleware response.
+4. **Use `server-only`** — Import in modules containing secrets to prevent client bundling.
+5. **Taint sensitive objects** — Use `taintObjectReference` to block server objects from reaching client.
+
+## Secure Server Action Example
+
+See [implementation examples](references/implementation.md)
 
 ## Implementation Guidelines
 

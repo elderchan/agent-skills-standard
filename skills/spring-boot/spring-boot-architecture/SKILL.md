@@ -1,28 +1,28 @@
 ---
 name: spring-boot-architecture
-description: "Standards for project structure and layering in Spring Boot 3+ applications. Use when structuring Spring Boot 3 projects, defining layers, or applying architecture patterns. (triggers: pom.xml, build.gradle, structure, layering, dto, controller, @RestController, @Service, @Repository, @Entity, @Bean, @Configuration)"
+description: "Structure Spring Boot 3+ projects with feature packaging and clean layering. Use when structuring Spring Boot 3 projects, defining layers, or applying architecture patterns. (triggers: pom.xml, build.gradle, structure, layering, dto, controller, @RestController, @Service, @Repository, @Entity, @Bean, @Configuration)"
 ---
 
 # Spring Boot Architecture Standards
 
 ## **Priority: P0 (CRITICAL)**
 
-## Implementation Guidelines
-
-### Structure & Packaging
+## Organize by Feature
 
 - **Package by Feature**: Prefer `com.app.feature` (e.g., `user`, `order`) over technical layers (`controllers`) for scalability.
 - **Dependency Rule**: Outer layers (Web) depend on Inner (Service). Inner layers MUST NOT depend on Outer.
 - **DTO Pattern**: ALWAYS use DTOs for API inputs/outputs. NEVER return `@Entity` directly.
 - **Java Records**: Use `record` for DTOs to ensure immutability (Java 17+).
 
-### Layer Responsibilities
+See [implementation examples](references/implementation.md) for Java Record DTOs, controller patterns, and global exception handling.
+
+## Define Layer Responsibilities
 
 1. **Controller (Web)**: Handle HTTP, Validation (`@Valid`), DTO mapping. Delegate logic to Service.
 2. **Service (Business)**: Transaction boundaries, orchestration. Returns Domain/DTOs.
 3. **Repository (Data)**: Database interactions only. Returns Entities/Projections.
 
-### API Design
+## Design API Layer
 
 - **Global Error Handling**: Use `@RestControllerAdvice` with `ProblemDetails` (RFC 7807).
 - **Validation**: Use Jakarta Bean Validation (`@NotNull`, `@Size`) on DTOs.

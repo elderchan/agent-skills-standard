@@ -1,9 +1,21 @@
 ---
 name: nextjs-app-router
-description: 'File-system routing, Layouts, and Route Groups. Use when implementing App Router routing, nested layouts, or route groups in Next.js. (triggers: app/**/page.tsx, app/**/layout.tsx, app/**/loading.tsx, App Router, Layout, Route Group, parallel routes)'
+description: "Configure file-system routing with nested layouts, route groups, parallel routes, and error boundaries in Next.js App Router. Use when creating page routes, adding loading/error states, or organizing routes with groups and dynamic segments. (triggers: app/**/page.tsx, app/**/layout.tsx, app/**/loading.tsx, App Router, Layout, Route Group, parallel routes)"
 ---
 
 ## **Priority: P0 (CRITICAL)**
+
+## Workflow: Add a New Route
+
+1. **Create page** — Add `app/dashboard/page.tsx` as a Server Component.
+2. **Add layout** — Create `app/dashboard/layout.tsx` returning `{children}`.
+3. **Add loading state** — Create `app/dashboard/loading.tsx` for Suspense boundary.
+4. **Add error boundary** — Create `app/dashboard/error.tsx` with `'use client'` and `reset` prop.
+5. **Await async APIs** — In Next.js 15+, `await params`, `cookies()`, `headers()`.
+
+## Route Group Example
+
+See [implementation examples](references/implementation.md)
 
 ## Implementation Guidelines
 
@@ -19,9 +31,6 @@ description: 'File-system routing, Layouts, and Route Groups. Use when implement
 - **Security**: Use **`middleware.ts`** for edge-side authentication and redirection. Ensure all **Route Handlers (`route.ts`)** are secured with appropriate auth checks.
 - **RSC**: Default to **React Server Components (RSC)**. Only use **`'use client'`** at leaf nodes for interactivity (hooks/events).
 - **Error Boundaries**: Create **`app/dashboard/loading.tsx`** to auto-wrap routes in a **Suspense boundary**. In **`error.tsx`**, use **`'use client'`** and provide a **`reset: () => void`** function.
-  const theme = cookieStore.get('theme');
-
-```
 
 ## File Conventions
 
@@ -53,4 +62,3 @@ description: 'File-system routing, Layouts, and Route Groups. Use when implement
 - **No `'use client'` at tree root**: Place at leaves; keep layouts and pages as Server Components.
 - **No `<html>`/`<body>` in nested layouts**: Only `app/layout.tsx` (root layout) should include them.
 - **No missing `error.tsx`**: Every route segment needs a Client Component error boundary.
-```

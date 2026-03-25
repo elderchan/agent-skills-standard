@@ -1,36 +1,28 @@
 ---
 name: ios-performance
-description: "Standards for Instruments, Memory Management, and Optimization. Use when profiling iOS apps with Instruments or optimizing memory and rendering. (triggers: **/*.swift, Instruments, Allocations, Leaks, dequeueReusableCell)"
+description: "Profile and optimize iOS apps with Instruments, memory management, and rendering techniques. Use when profiling iOS apps with Instruments or optimizing memory and rendering. (triggers: **/*.swift, Instruments, Allocations, Leaks, dequeueReusableCell)"
 ---
 
-# iOS Performance Standards
+# iOS Performance
 
 ## **Priority: P0**
 
-## Implementation Guidelines
+## Implementation Workflow
 
-### Diagnostic Tools
+1. **Profile with Instruments** — Regularly use Allocations and Leaks to detect memory issues. Use Time Profiler for CPU stalls.
+2. **Reuse cells** — Always use `dequeueReusableCell` and keep `cellForRowAt` lightweight.
+3. **Cache images** — Use `SDWebImage` or `Kingfisher` for remote assets. `AsyncImage` lacks caching for lists.
+4. **Offload to background** — Move parsing, encryption, and heavy computation off the Main thread using GCD or Tasks.
+5. **Enable strict warnings** — Set `SWIFT_TREAT_WARNINGS_AS_ERRORS` in Release builds.
+6. **Run static analysis** — Use Xcode's "Analyze" (Product > Analyze) to catch logic errors.
 
-- **Instruments**: Regularly use **Allocations** and **Leaks** to detect memory issues.
-- **Time Profiler**: Identify heavy CPU tasks and Main Thread stalls.
-- **Network instrument**: Analyze request payload sizes and frequency.
-
-### Optimization
-
-- **Table/Collection Views**: Always use `dequeueReusableCell` and keep `cellForRowAt` logic lightweight.
-- **Image Caching**: Use `SDWebImage` or `Kingfisher` for remote assets to prevent redundant fetching and main-thread decoding. (Note: `AsyncImage` lacks built-in caching; prioritize third-party for lists).
-- **Background threads**: Offload expensive work (parsing, encryption) from the Main thread using GCD or Tasks.
-
-### Diagnostics
-
-- **Compiler Warnings**: Enable `SWIFT_TREAT_WARNINGS_AS_ERRORS` in Release builds.
-- **Static Analyzer**: Use Xcode's "Analyze" (Product > Analyze) to find logic errors.
+See [background processing and cell reuse examples](references/implementation.md)
 
 ## Anti-Patterns
 
-- **No parsing/processing on Main**: Use background thread.
-- **No redundant cache clears**: Let system handle low-memory via AppDelegate.
-- **No undetected retain cycles**: Use Leaks instrument frequently.
+- ❌ Parsing/processing on Main thread — offload to background using `Task.detached` or GCD
+- ❌ Redundant cache clears — let the system handle low-memory via `applicationDidReceiveMemoryWarning`
+- ❌ Undetected retain cycles — use Leaks instrument frequently during development
 
 ## References
 

@@ -1,21 +1,23 @@
 ---
 name: laravel-api
-description: 'REST and JSON API standards for modern Laravel backends. Use when designing REST endpoints, API resources, or JSON API responses in Laravel. (triggers: routes/api.php, app/Http/Resources/**/*.php, resource, collection, sanctum, passport, cors)'
+description: "Build REST endpoints with API Resources, Sanctum authentication, and versioned route groups in Laravel. Use when creating JsonResource classes, adding token-based auth, or defining rate-limited API routes. (triggers: routes/api.php, app/Http/Resources/**/*.php, resource, collection, sanctum, passport, cors)"
 ---
 
 # Laravel API
 
 ## **Priority: P1 (HIGH)**
 
-## Structure
+## Workflow: Create a New API Endpoint
 
-```text
-app/
-└── Http/
-    ├── Resources/      # Data transformation
-    └── Controllers/
-        └── Api/        # API specific logic
-```
+1. **Generate resource** — `php artisan make:resource UserResource`.
+2. **Define toArray()** — Specify exact output fields; never return raw models.
+3. **Add route** — Register in `routes/api.php` with version prefix and throttle middleware.
+4. **Secure with Sanctum** — Apply `auth:sanctum` middleware to protected routes.
+5. **Return proper status codes** — 201 for Created, 422 for Validation, 204 for No Content.
+
+## API Resource Example
+
+See [implementation examples](references/implementation.md#api-resource-example) for a complete API Resource with collection usage.
 
 ## Implementation Guidelines
 

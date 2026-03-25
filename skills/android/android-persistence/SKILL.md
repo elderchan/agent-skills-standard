@@ -1,24 +1,26 @@
 ---
 name: android-persistence
-description: "Standards for Room Database and DataStore. Use when implementing Room database schemas or DataStore preferences in Android. (triggers: **/*Dao.kt, **/*Database.kt, **/*Entity.kt, @Dao, @Entity, RoomDatabase)"
+description: "Implement Room database schemas and DataStore preferences with proper async patterns in Android. Use when defining Room entities, DAOs, migrations, or replacing SharedPreferences with DataStore. (triggers: **/*Dao.kt, **/*Database.kt, **/*Entity.kt, @Dao, @Entity, RoomDatabase)"
 ---
 
 # Android Persistence Standards
 
 ## **Priority: P0**
 
-## Implementation Guidelines
+## 1. Configure Room Database
 
-### Room
+- Return `Flow<List<T>>` for queries, use `suspend` for Write/Insert.
+- Keep `@Entity` data classes simple. Map to Domain models in Repository.
+- Use `@Transaction` for multi-table queries (Relations).
 
-- **Async**: Return `Flow<List<T>>` for queries, use `suspend` for Write/Insert.
-- **Entities**: Keep simple `@Entity` data classes. Map to Domain models in Repository.
-- **Transactions**: Use `@Transaction` for multi-table queries (Relations).
+See [DAO templates](references/implementation.md) for Room DAO patterns.
 
-### DataStore
+## 2. Migrate to DataStore
 
-- **Usage**: Replace `SharedPreferences` with `ProtoDataStore` (Type-safe) or `PreferencesDataStore`.
-- **Scope**: Inject singleton instance via Hilt.
+- Replace `SharedPreferences` with `ProtoDataStore` (type-safe) or `PreferencesDataStore`.
+- Inject singleton DataStore instance via Hilt.
+
+See [DAO templates](references/implementation.md) for DataStore migration patterns.
 
 ## Anti-Patterns
 

@@ -1,19 +1,22 @@
 ---
 name: laravel-sessions-middleware
-description: 'Expert standards for session drivers, security headers, and middleware logic. Use when configuring session drivers, security headers, or custom middleware in Laravel. (triggers: app/Http/Middleware/**/*.php, config/session.php, session, driver, handle, headers, csrf)'
+description: "Configure Redis session drivers, register security-header middleware, and prevent session fixation in Laravel. Use when switching session drivers, adding HSTS/CSP headers via middleware, or regenerating sessions after login. (triggers: app/Http/Middleware/**/*.php, config/session.php, session, driver, handle, headers, csrf)"
 ---
 
 # Laravel Sessions & Middleware
 
 ## **Priority: P1 (HIGH)**
 
-## Structure
+## Workflow: Secure Sessions & Add Middleware
 
-```text
-app/Http/
-├── Middleware/         # Custom logic layers
-└── Kernel.php          # Global/Group registration
-```
+1. **Set Redis driver** — `SESSION_DRIVER=redis` in `.env`; install `predis/predis`.
+2. **Regenerate on login** — Call `$request->session()->regenerate()` after authentication.
+3. **Create security middleware** — Add HSTS, CSP, X-Frame-Options headers.
+4. **Register globally** — Use `withMiddleware(fn($m) => $m->append(...))` in `bootstrap/app.php`.
+
+## Security Headers Middleware Example
+
+See [implementation examples](references/implementation.md#security-headers-middleware) for security headers middleware and directory structure.
 
 ## Implementation Guidelines
 

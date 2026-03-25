@@ -1,6 +1,6 @@
 ---
 name: nestjs-deployment
-description: "Docker builds, Memory tuning, and Graceful shutdown. Use when containerizing NestJS apps, tuning memory, or implementing graceful shutdown. (triggers: Dockerfile, k8s/**, helm/**, Dockerfile, max-old-space-size, shutdown hooks)"
+description: "Containerize NestJS apps with multi-stage Docker builds, tune Node.js memory, and implement graceful shutdown hooks. Use when writing Dockerfiles, configuring K8s deployments, or adding shutdown hooks for NestJS. (triggers: Dockerfile, k8s/**, helm/**, max-old-space-size, shutdown hooks)"
 ---
 
 # Deployment & Ops Standards
@@ -9,13 +9,17 @@ description: "Docker builds, Memory tuning, and Graceful shutdown. Use when cont
 
 Docker optimization and production deployment standards for NestJS applications.
 
-## Docker Optimization
+## Workflow: Containerize a NestJS App
 
-- **Multi-Stage Builds**: Mandatory.
-  1. **Build Stage**: Install `devDependencies`, build NestJS (`nest build`).
-  2. **Run Stage**: Copy only `dist` and `node_modules` (pruned), use `node:alpine`.
-- **Security**: Do not run as `root`.
-  - **Dockerfile**: `USER node`.
+1. **Write multi-stage Dockerfile** — Build stage installs devDeps and runs `nest build`; run stage copies only `dist` and pruned `node_modules`.
+2. **Set non-root user** — Add `USER node` to the Dockerfile.
+3. **Tune memory** — Set `--max-old-space-size` to ~75% of container memory limit.
+4. **Enable shutdown hooks** — Call `app.enableShutdownHooks()` in `main.ts`.
+5. **Add K8s pre-stop** — Configure a 5-10s sleep pre-stop hook for LB draining.
+
+## Dockerfile Example
+
+See [implementation examples](references/example.md)
 
 ## Runtime Tuning (Node.js)
 

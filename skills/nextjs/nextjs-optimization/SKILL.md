@@ -1,6 +1,6 @@
 ---
 name: nextjs-optimization
-description: 'Image, Font, Script, and Metadata optimization strategies. Use when optimizing Next.js images, fonts, scripts, or page metadata for performance. (triggers: **/layout.tsx, **/page.tsx, next/image, next/font, metadata, generateMetadata)'
+description: "Optimize images, fonts, scripts, and metadata for Next.js performance and Core Web Vitals. Use when configuring next/image for LCP, next/font for zero layout shift, next/script loading strategies, or generateMetadata for SEO. (triggers: **/layout.tsx, **/page.tsx, next/image, next/font, metadata, generateMetadata)"
 ---
 
 # Optimization
@@ -11,53 +11,39 @@ Core optimization primitives provided by Next.js. **Monitor First, Optimize Late
 
 ## Monitoring (Core Web Vitals)
 
-Before applying optimizations, identify bottlenecks using:
+- **LCP** (Largest Contentful Paint): Target < 2.5s.
+- **CLS** (Cumulative Layout Shift): Target < 0.1.
+- **INP** (Interaction to Next Paint): Target < 200ms.
+- **Tools**: Chrome DevTools "Performance" tab, `next/speed-insights`, `React Profiler`.
 
-- **LCP (Largest Contentful Paint)**: Initial load speed. Target < 2.5s.
-- **CLS (Cumulative Layout Shift)**: Visual stability. Target < 0.1.
-- **INP (Interaction to Next Paint)**: Responsiveness. Target < 200ms.
-- **Tools**: Chrome DevTools "Performance" tab, `next/speed-insights`, or `React Profiler`.
+## Images
 
-## Implementation Guidelines
+Always use `next/image` to prevent CLS and enable automatic optimization:
 
-- **Images**: Always use **`next/image`** to prevent **CLS (Cumulative Layout Shift)**. Set **`priority`** for above-the-fold images to improve **LCP (Largest Contentful Paint)**. Use **`sizes`** (e.g., `(max-width: 768px) 100vw, 33vw`) and **`placeholder="blur"`** for better UX.
-- **Fonts**: use **`next/font`** (Google or Local) to optimize for **Zero Layout Shift**. This automatically host fonts locally and adds **`font-display: swap`**.
-- **Scripts**: Use **`next/script`** with appropriate strategies: **`beforeInteractive`** (critical), **`afterInteractive`** (default/analytics), or **`lazyOnload`** (lower priority/social widgets/chat).
-- **Metadata**: Define **`static metadata`** or use **`generateMetadata`** (async) for dynamic routes to improve SEO and social sharing. This replaces the legacy `Head` component.
-- **Bundle**: Analyze bundle size with **`@next/bundle-analyzer`**. Prune heavy libraries; use **ESM-tree-shakable** dependencies.
-- **Components**: Use **`dynamic`** imports (Next.js version of `React.lazy`) with **`Suspense`** for large components that are not needed during initial render.
-- **Next.js 15+ Integration**: Enable **`ppr: true` (Partial Prerendering)** in `next.config.js` to combine static shell with dynamic islands.
+See [implementation examples](references/example.md)
 
-- **Strategy**: Self-host Google Fonts or local files via `next/font`.
-- **Optimization**: Zero layout shift, no network requests for font files at runtime. Apply classes to `<body>` or specific elements.
+## Fonts
+
+Use `next/font` for zero layout shift — self-hosts fonts and adds `font-display: swap`:
+
+See [implementation examples](references/example.md)
 
 ## Metadata (SEO)
 
-- **Static**: Export `metadata` object from `layout.tsx` or `page.tsx`.
+See [implementation examples](references/example.md)
 
-  ```tsx
-  export const metadata: Metadata = {
-    title: 'Dashboard',
-    description: '...',
-  };
-  ```
+## Scripts
 
-- **Dynamic**: Export `generateMetadata({ params })` function.
+Use `next/script` with appropriate loading strategies:
+- `beforeInteractive`: Critical scripts (polyfills).
+- `afterInteractive`: Analytics (Google Analytics).
+- `lazyOnload`: Chat widgets, social embeds.
 
-  ```tsx
-  export async function generateMetadata({ params }) {
-    const product = await getProduct(params.id);
-    return { title: product.name };
-  }
-  ```
+## Bundle & Components
 
-- **Open Graph**: Use `openGraph` key for social cards.
-
-## Scripts (`next/script`)
-
-- **Loading Strategy**: Control when 3rd party scripts load.
-  - `strategy="afterInteractive"` (Default): Google Analytics.
-  - `strategy="lazyOnload"`: Chat widgets, low priority.
+- Analyze with `@next/bundle-analyzer`. Prune heavy libraries; use ESM-tree-shakable dependencies.
+- Use `dynamic` imports with `Suspense` for large components not needed at initial render.
+- Enable `ppr: true` (Partial Prerendering) in Next.js 15+ for static shell + dynamic islands.
 
 ## Anti-Patterns
 

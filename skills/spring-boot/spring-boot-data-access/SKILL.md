@@ -1,22 +1,22 @@
 ---
 name: spring-boot-data-access
-description: 'Best practices for JPA, Hibernate, and Database interactions in Spring Boot. Use when implementing JPA entities, repositories, or database access in Spring Boot. (triggers: **/*Repository.java, **/*Entity.java, jpa-repository, entity-graph, transactional, n-plus-1)'
+description: "Optimize JPA, Hibernate, and database interactions in Spring Boot. Use when implementing JPA entities, repositories, or database access in Spring Boot. (triggers: **/*Repository.java, **/*Entity.java, jpa-repository, entity-graph, transactional, n-plus-1)"
 ---
 
 # Spring Boot Data Access
 
 ## **Priority: P0**
 
-## Implementation Guidelines
-
-### JPA & Hibernate (Spring Data JPA)
+## Configure JPA and Spring Data
 
 - **Read-Only**: Default to **`@Transactional(readOnly = true)`** on Services to optimize DB resources.
 - **Projections**: Use **`Java Records`** for **Read-Only** query results. Avoid fetching full **`@Entity`** objects when not necessary.
 - **Pagination**: ALWAYS use **`Pageable`** and **`Slice`** (or `Page`) to prevent loading massive datasets.
-- **Spring Data**: Prefer **`JpaRepository`** and **`Query methods`**. Use **`@Query`** with JPQL for complex logic. Use Flyway or Liquibase for migrations; never use `spring.jpa.hibernate.ddl-auto=create` (`ddl-auto`) in production.
+- **Spring Data**: Prefer **`JpaRepository`** and **`Query methods`**. Use **`@Query`** with JPQL for complex logic. Use Flyway or Liquibase for migrations; never use `ddl-auto=create` in production.
 
-### Query & Transaction Optimization
+See [implementation examples](references/implementation.md) for repository projections, EntityGraph, and transactional patterns.
+
+## Optimize Queries and Transactions
 
 - **N+1 Problem**: Fix **`N+1`** selects using **`JOIN FETCH`** (JPQL) or **`@EntityGraph`**.
 - **Open-In-View**: Set `spring.jpa.open-in-view=false` in **`application.yaml`**.

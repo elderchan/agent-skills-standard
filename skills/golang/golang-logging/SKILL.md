@@ -20,16 +20,18 @@ description: "Standards for structured logging and observability in Golang. Use 
 - **Zap (`uber-go/zap`)**: High performance, good if pre-1.21 or extreme throughput needed.
 - **Zerolog**: Zero allocation, fast JSON logger.
 
-## Guidelines
+## Workflow: Set Up Structured Logging with slog
 
-- Initialize logger at startup.
-- Inject logger or use a global singleton configured at startup (pragmatic choice).
-- Use `slog.Attr` for structured data.
+1. Create a JSON handler at startup in `main()`
+2. Optionally wrap in middleware to inject request-scoped attributes
+3. Use `slog.With()` to add correlation IDs per request
+4. Pass logger via context or dependency injection
+
+See [slog setup and usage examples](references/slog-patterns.md)
 
 ## References
 
 - [Slog Patterns](references/slog-patterns.md)
-
 
 ## Anti-Patterns
 

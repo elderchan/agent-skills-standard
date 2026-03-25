@@ -1,6 +1,6 @@
 ---
 name: php-concurrency
-description: 'Handling concurrency and non-blocking I/O in modern PHP. Use when implementing concurrent requests, async processing, or non-blocking I/O in PHP. (triggers: **/*.php, Fiber, suspend, resume, non-blocking, async)'
+description: "Implement concurrency and non-blocking I/O in modern PHP. Use when implementing concurrent requests, async processing, or non-blocking I/O in PHP. (triggers: **/*.php, Fiber, suspend, resume, non-blocking, async)"
 ---
 
 # PHP Concurrency
@@ -9,30 +9,27 @@ description: 'Handling concurrency and non-blocking I/O in modern PHP. Use when 
 
 ## Structure
 
-```text
-src/
-└── Async/
-    ├── Schedulers/
-    └── Clients/
-```
+See [implementation examples](references/implementation.md#directory-structure) for directory layout.
 
-## Implementation Guidelines
-
-### PHP Fibers (8.1+)
+## Implement PHP Fibers (8.1+)
 
 - **Multitasking**: Use **`new Fiber()`** for low-level cooperative multitasking.
 - **Yielding Control**: Use **`Fiber::suspend('paused')`** to yield execution back to the caller.
 - **Resuming**: Call **`$fiber->resume('hello')`** to continue execution. Catch exceptions via **`$fiber->getReturn()`**.
 - **Isolation**: Use **separate PDO connections per Fiber** to avoid shared mutable state.
 
-### Non-blocking I/O & Event Loops
+See [implementation examples](references/implementation.md#fiber-example) for Fiber cooperative multitasking code.
+
+## Configure Non-blocking I/O & Event Loops
 
 - **Loop Setup**: Use **ReactPHP** or **Amp**. Call **`Loop::get()`** to access the event loop.
 - **HTTP Clients**: Use **`react/http`** or the **Guzzle `Pool($client, ...)`** for concurrent requests.
 - **I/O Safety**: **Never use blocking `file_get_contents` or `sleep()`** inside a Fiber or EventLoop.
 - **Entry Point**: Run **`Loop::run()`** at your application entry point to start the async loop.
 
-### Concurrency Strategies
+See [implementation examples](references/implementation.md#guzzle-pool-example) for concurrent HTTP requests with Guzzle Pool.
+
+## Choose Concurrency Strategies
 
 - **Queued Jobs**: For heavy concurrency, prefer **Laravel Horizon** or **Symfony Messenger** over raw PHP Fibers.
 - **Self-Contained Logic**: Ensure Fibers manage their own state and exceptions to prevent cross-contamination.
