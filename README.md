@@ -62,6 +62,14 @@ We understand that "injecting" instructions into your AI can sound risky to secu
 - **Sandboxed**: The CLI tool (`agent-skills-standard`) runs in user space to download text files. The "skills" themselves run inside the AI's isolated context window, not as OS processes.
 - **Privacy**: We do not collect any code or project data. Feedback is only sent if you manually trigger the `feedback` command or strongly opt-in.
 
+### 🛡️ Adversarial Resilience & Skill Integrity
+
+To ensure that the instructions provided to AI agents are both secure and effective, the standard implements:
+
+- **Red-Team Auditing**: Skills undergo periodic "Pentests" using adversarial workflows to identify logic gaps, prompt injection surfaces, and "instruction drift."
+- **Mandatory Zero-Trust Protocol**: All agents working with this standard are bound by **Rule Zero**, which forbids code generation until a multi-step audit of active skills and security standards is performed.
+- **Prompt Injection Mitigation**: High-density skill patterns are specifically designed to minimize the risk of AI models ignoring constraints or leaking sensitive context through strategic instruction placement.
+
 ---
 
 ## 🚀 Quick Start (For Developers)
@@ -197,6 +205,7 @@ For detailed architecture logic and token calculation scripts, see [CLI Architec
 
 | Version | Date       | Skills | Avg Tokens | Savings (%) | Report                                  |
 | ------- | ---------- | ------ | ---------- | ----------- | --------------------------------------- |
+| v2.0.1  | 2026-03-30 | 238    | 527        | 86%         | [Report](benchmarks/archive/v2.0.1.md)  |
 | v2.0.0  | 2026-03-25 | 235    | 523        | 86%         | [Report](benchmarks/archive/v2.0.0.md)  |
 | v1.10.3 | 2026-03-21 | 234    | 505        | 86%         | [Report](benchmarks/archive/v1.10.3.md) |
 | v1.10.1 | 2026-03-16 | 229    | 428        | 88%         | [Report](benchmarks/archive/v1.10.1.md) |
