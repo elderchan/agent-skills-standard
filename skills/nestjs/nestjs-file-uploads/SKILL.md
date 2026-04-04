@@ -1,6 +1,6 @@
 ---
 name: nestjs-file-uploads
-description: "Handle file uploads securely with Validation and S3 streaming in NestJS. Use when implementing secure file uploads, validation, or S3 streaming in NestJS. (triggers: **/*.controller.ts, FileInterceptor, Multer, S3, UploadedFile)"
+description: "Validate and stream file uploads securely with Validation and S3 streaming in NestJS. Use when implementing secure file uploads, validation, or S3 streaming in NestJS. (triggers: **/*.controller.ts, FileInterceptor, Multer, S3, UploadedFile)"
 ---
 
 # File Upload Patterns
@@ -39,5 +39,3 @@ Secure file upload handling with validation and storage patterns.
 - **No synchronous file processing**: Offload image/video work to BullMQ workers via FileUploadedEvent.
 
 ## References
-
-- [Implementation Examples](references/example.md)

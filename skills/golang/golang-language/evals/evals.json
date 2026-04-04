@@ -3,37 +3,36 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "What is the idiomatic way to define an enum in Go?",
-      "expected_output": "Use const block with iota. PascalCase for exported constants. Group related constants in a typed int/string type.",
+      "prompt": "What's the idiomatic way to define a set of related constants in Go?",
+      "expected_output": "Use iota inside a const block for type-safe enumerations.",
       "assertions": [
         { "type": "contains", "value": "iota" },
-        { "type": "contains", "value": "const block" }
+        { "type": "contains", "value": "const" }
       ]
     },
     {
       "id": 2,
-      "prompt": "How should I name Go interfaces?",
-      "expected_output": "Small interfaces with 1-2 methods. Single-method interfaces named with -er suffix (Reader, Writer, Stringer). Define where used (consumer side), not where implemented.",
+      "prompt": "How should I format and organize imports in Go?",
+      "expected_output": "Run goimports to auto-organize. Use gofmt or goimports on save. Use gopls for LSP features.",
       "assertions": [
-        { "type": "contains", "value": "Small interfaces" },
-        { "type": "contains", "value": "1-2 methods" },
-        { "type": "contains", "value": "Define where used" }
+        { "type": "contains", "value": "goimports" },
+        { "type": "contains", "value": "gofmt" }
       ]
     },
     {
       "id": 3,
-      "prompt": "Is it OK to use init() functions in Go packages?",
-      "expected_output": "Avoid init(). Use constructors (NewService()) instead. init() runs implicitly and makes testing harder. Prefer explicit initialization.",
+      "prompt": "What are the anti-patterns I should avoid in Go?",
+      "expected_output": "No init() — use constructors like NewService(). No globals — use dependency injection. No panic — return errors. No ignored errors with _. No stuttering names like log.LogError.",
       "assertions": [
-        { "type": "contains", "value": "No init" },
-        { "type": "contains", "value": "Use constructors" },
-        { "type": "contains", "value": "not init()" }
+        { "type": "contains", "value": "init" },
+        { "type": "contains", "value": "constructor" },
+        { "type": "contains", "value": "panic" }
       ]
     }
   ],
   "should_not_trigger": [
-    "How do I structure a Go microservice?",
-    "How do I use goroutines?",
-    "How do I write a TypeScript interface?"
+    "How do I create a Kubernetes deployment manifest?",
+    "Write a React component for the order list",
+    "Set up PostgreSQL connection pooling"
   ]
 }

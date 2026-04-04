@@ -1,6 +1,6 @@
 ---
 name: nextjs-state-management
-description: "Apply best practices for managing URL, server, and client state in Next.js applications. Use when choosing between URL params, SWR/TanStack Query, Zustand, or Context for state, or when fixing hydration mismatches from localStorage. (triggers: **/hooks/*.ts, **/store.ts, **/components/*.tsx, useState, useContext, zustand, redux)"
+description: 'Apply best practices for managing URL, server, and client state in Next.js applications. Use when choosing between URL params, SWR/TanStack Query, Zustand, or Context for state, or when fixing hydration mismatches from localStorage. (triggers: **/hooks/*.ts, **/store.ts, **/components/*.tsx, useState, useContext, zustand, redux)'
 ---
 
 # State Management
@@ -29,6 +29,17 @@ See [implementation examples](references/implementation.md)
 ## Hydration Safety
 
 Wrap `localStorage` reads in `useEffect` or a `mounted` flag to avoid hydration mismatches. Manage optimistic updates with `useOptimistic` in Next.js 15+.
+
+## Legacy Redux (existing projects)
+
+If the project already uses `redux@4` + `createStore` + `redux-thunk` + `next-redux-wrapper`:
+
+- Use `useSelector` / `useDispatch` hooks — never connect HOC.
+- Define a typed `RootState` and typed `AppDispatch` for all selectors and dispatch calls.
+- Avoid adding Zustand or TanStack Query on top of an existing Redux codebase — migrate incrementally if needed.
+- Migration path: Redux Toolkit (`@reduxjs/toolkit`) → RTK Query → then consider TanStack Query.
+
+See [references/redux.md](references/redux.md) for typed selector and thunk patterns.
 
 ## Library Patterns
 

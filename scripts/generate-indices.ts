@@ -94,22 +94,23 @@ async function generate() {
     `✅ Generated indices for ${Object.keys(frameworkIndices).length} frameworks in skills/index.json`,
   );
 
-  // Also update AGENTS.md
-  // Already have repoRoot from above
-
   const generator = new IndexGeneratorService();
-  const allEntries = new Set<string>();
 
-  // Include all skill categories in the repository index
-  Object.values(frameworkIndices).forEach((s) => {
-    s.split('\n').forEach((entry) => allEntries.add(entry));
-  });
+  // Generate per-category _INDEX.md files
+  const categoryIndices = await generator.generateAllCategoryIndices(skillsDir);
+  for (const [category, indexContent] of Object.entries(categoryIndices)) {
+    const indexMdPath = path.join(skillsDir, category, '_INDEX.md');
+    await fs.writeFile(indexMdPath, indexContent, 'utf8');
+  }
+  console.log(
+    `✅ Generated _INDEX.md for ${Object.keys(categoryIndices).length} categories`,
+  );
 
-  const indexContent = generator.assembleIndex(Array.from(allEntries));
+  // Generate AGENTS.md — router-style index (compact, scalable)
+  const routerIndexContent = await generator.assembleRouterIndex(skillsDir);
+  await MarkdownUtils.injectIndex(repoRoot, ['AGENTS.md'], routerIndexContent);
 
-  await MarkdownUtils.injectIndex(repoRoot, ['AGENTS.md'], indexContent);
-
-  console.log('✅ Updated AGENTS.md in repo root');
+  console.log('✅ Updated AGENTS.md in repo root (Router-style)');
 
   const agents = [
     Agent.Cursor,
