@@ -1,13 +1,11 @@
 ---
 name: react-tooling
-description: "Configure debugging, bundle analysis, and ecosystem tools for React applications. Use when setting up Vite/webpack build tooling, analyzing bundle size, debugging re-renders with React DevTools, or configuring ESLint and StrictMode for React projects. (triggers: package.json, devtool, bundle, strict mode, profile)"
+description: 'Configure debugging, bundle analysis, and ecosystem tools for React applications. Use when setting up Vite/webpack build tooling, analyzing bundle size, debugging re-renders with React DevTools, or configuring ESLint and StrictMode for React projects. (triggers: package.json, devtool, bundle, strict mode, profile)'
 ---
 
 # React Tooling
 
 ## **Priority: P2 (OPTIONAL)**
-
-Tools for analysis, debugging, and build optimization.
 
 ## Debugging Workflow
 

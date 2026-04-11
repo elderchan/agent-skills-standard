@@ -1,17 +1,23 @@
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IndexGeneratorService } from '../IndexGeneratorService';
+import { IndexContentBuilder } from '../IndexContentBuilder';
+import { IndexGeneratorServiceImpl } from '../IndexGeneratorServiceImpl';
+import { MetadataReader } from '../MetadataReader';
 
 vi.mock('fs-extra');
 vi.mock('js-yaml');
 
 describe('IndexGeneratorService', () => {
-  let service: IndexGeneratorService;
+  let service: IndexGeneratorServiceImpl;
+  let metadataReader: MetadataReader;
+  let indexContentBuilder: IndexContentBuilder;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new IndexGeneratorService();
+    service = new IndexGeneratorServiceImpl();
+    metadataReader = new MetadataReader();
+    indexContentBuilder = new IndexContentBuilder(metadataReader);
   });
 
   describe('generate', () => {
@@ -47,6 +53,44 @@ describe('IndexGeneratorService', () => {
 
       expect(result).toContain('- **[common/base]**: 🚨 Desc');
       expect(result).toContain('- **[flutter/bloc]**: 🚨 Desc');
+    });
+
+    it('should include custom standalone skills (files ending in .md)', async () => {
+      const baseDir = '/skills';
+
+      (fs.pathExists as any).mockImplementation(async (p: string) => {
+        if (p === baseDir || p.includes('common')) return true;
+        if (p.includes('custom-rule.md')) return true;
+        return false;
+      });
+
+      (fs.readdir as any).mockImplementation(async (p: string) => {
+        if (p.endsWith('/skills')) return ['common'];
+        if (p.endsWith('common')) return ['custom-rule.md'];
+        return [];
+      });
+
+      (fs.stat as any).mockImplementation(async (p: string) => {
+        if (p.endsWith('custom-rule.md')) {
+          return { isDirectory: () => false };
+        }
+        return { isDirectory: () => true };
+      });
+
+      (fs.readFile as any).mockResolvedValue(
+        '---\nname: Custom Rule\ndescription: A standalone rule\n---\n## **Priority: P0**',
+      );
+      (yaml.load as any).mockReturnValue({
+        name: 'Custom Rule',
+        description: 'A standalone rule',
+      });
+
+      const result = await service.generate(baseDir);
+
+      expect(result).toContain('### List of Available Skills');
+      expect(result).toContain(
+        '- **[common/custom-rule.md]**: 🚨 A standalone rule',
+      );
     });
 
     it('should include all skill folders in the index regardless of categories', async () => {
@@ -164,8 +208,7 @@ describe('IndexGeneratorService', () => {
   describe('parseSkill edge cases', () => {
     it('should handle skill without frontmatter', async () => {
       (fs.readFile as any).mockResolvedValue('no frontmatter');
-      // @ts-expect-error - protected
-      const res = await service.parseSkill('/cat/skill/SKILL.md');
+      const res = await metadataReader.parseSkill('/cat/skill/SKILL.md');
       expect(res).toBeNull();
     });
 
@@ -174,8 +217,7 @@ describe('IndexGeneratorService', () => {
         '---\nname: n\ndescription: d\n---\nBody without priority';
       (fs.readFile as any).mockResolvedValue(fmContent);
       (yaml.load as any).mockReturnValue({ name: 'n', description: 'd' });
-      // @ts-expect-error - protected
-      const res = await service.parseSkill('/cat/skill/SKILL.md');
+      const res = await metadataReader.parseSkill('/cat/skill/SKILL.md');
       expect(res!.priority).toBe('P1');
     });
 
@@ -186,7 +228,11 @@ describe('IndexGeneratorService', () => {
         priority: 'P0 - URRGENT',
         triggers: {},
       };
-      const entry = (service as any).formatEntry('cat', 'skill', metadata);
+      const entry = indexContentBuilder.formatEntry(
+        'cat',
+        'skill',
+        metadata as any,
+      );
       expect(entry).toContain('🚨 d');
       expect(entry).toBe('- **[cat/skill]**: 🚨 d');
     });
@@ -198,7 +244,11 @@ describe('IndexGeneratorService', () => {
         priority: 'P1',
         triggers: {},
       };
-      const entry = (service as any).formatEntry('cat', 'skill', metadata);
+      const entry = indexContentBuilder.formatEntry(
+        'cat',
+        'skill',
+        metadata as any,
+      );
       expect(entry).toContain(
         'This is a very long description that should be truncated',
       );
@@ -210,11 +260,11 @@ describe('IndexGeneratorService', () => {
       (fs.readFile as any).mockResolvedValue(fmContent);
       (yaml.load as any).mockReturnValue({ metadata: { triggers: {} } });
 
-      const res = await (service as any).parseSkill('/cat/skill/SKILL.md');
+      const res = await metadataReader.parseSkill('/cat/skill/SKILL.md');
       expect(res!.name).toBe('');
       expect(res!.description).toBe('');
 
-      const entry = (service as any).formatEntry('cat', 'skill', res);
+      const entry = indexContentBuilder.formatEntry('cat', 'skill', res!);
       expect(entry).toBe('- **[cat/skill]**: ');
     });
   });
@@ -234,10 +284,10 @@ describe('IndexGeneratorService', () => {
         priority: 'P0',
         triggers: {},
       };
-      const entry = (service as any).formatEntry(
+      const entry = indexContentBuilder.formatEntry(
         'nestjs',
         'security',
-        metadata,
+        metadata as any,
         rules,
       );
       expect(entry).toContain('+common/security-standards');
@@ -250,10 +300,10 @@ describe('IndexGeneratorService', () => {
         priority: 'P1',
         triggers: {},
       };
-      const entry = (service as any).formatEntry(
+      const entry = indexContentBuilder.formatEntry(
         'nestjs',
         'architecture',
-        metadata,
+        metadata as any,
         rules,
       );
       expect(entry).toContain('+common/best-practices');
@@ -267,7 +317,7 @@ describe('IndexGeneratorService', () => {
         priority: 'P0',
         triggers: {},
       };
-      const entry = (service as any).formatEntry(
+      const entry = (indexContentBuilder as any).formatEntry(
         'common',
         'security-standards',
         metadata,
@@ -283,7 +333,7 @@ describe('IndexGeneratorService', () => {
         priority: 'P0',
         triggers: { composite: ['common/security-standards'] },
       };
-      const entry = (service as any).formatEntry(
+      const entry = (indexContentBuilder as any).formatEntry(
         'nestjs',
         'security',
         metadata,
@@ -300,7 +350,7 @@ describe('IndexGeneratorService', () => {
         priority: 'P0',
         triggers: { composite: ['some/other-skill'] },
       };
-      const entry = (service as any).formatEntry(
+      const entry = (indexContentBuilder as any).formatEntry(
         'nestjs',
         'security',
         metadata,
@@ -317,7 +367,7 @@ describe('IndexGeneratorService', () => {
         priority: 'P0',
         triggers: {},
       };
-      const entry = (service as any).formatEntry(
+      const entry = (indexContentBuilder as any).formatEntry(
         'nestjs',
         'security',
         metadata,
@@ -632,6 +682,23 @@ describe('IndexGeneratorService', () => {
       expect(result).toContain('SKILL.md');
     });
 
+    it('should render _test.go routing as *_test.go', async () => {
+      (fs.pathExists as any).mockResolvedValue(true);
+      (fs.readdir as any).mockResolvedValue(['golang', 'common']);
+      (fs.readFile as any).mockImplementation(async (p: string) => {
+        if (p.includes('metadata.json')) {
+          return JSON.stringify({
+            file_routing: { '_test.go': ['golang'] },
+          });
+        }
+        return '';
+      });
+
+      const result = await service.assembleRouterIndex('/skills');
+      expect(result).toContain('`*_test.go`');
+      expect(result).not.toContain('`*._test.go`');
+    });
+
     it('should not exceed 30 lines for the router', async () => {
       (fs.pathExists as any).mockResolvedValue(true);
       (fs.readdir as any).mockResolvedValue([
@@ -793,8 +860,9 @@ describe('IndexGeneratorService', () => {
       expect(result).not.toContain('typescript/_INDEX.md');
       expect(result).not.toContain('react/_INDEX.md');
       expect(result).not.toContain('nextjs/_INDEX.md');
-      expect(result).not.toContain('`*.ts`');
-      expect(result).not.toContain('`*.tsx`');
+      // Use more specific check to avoid matching footer notes
+      expect(result).not.toMatch(/^\| `\*\.ts` \|/m);
+      expect(result).not.toMatch(/^\| `\*\.tsx` \|/m);
     });
 
     it('shows a partial row when only some categories in a routing entry are installed', async () => {
@@ -833,8 +901,8 @@ describe('IndexGeneratorService', () => {
       const result = await service.assembleRouterIndex('/agent/skills');
 
       // No file-extension rows
-      expect(result).not.toContain('`*.go`');
-      expect(result).not.toContain('`*.ts`');
+      expect(result).not.toMatch(/^\| `\*\.go` \|/m);
+      expect(result).not.toMatch(/^\| `\*\.ts` \|/m);
       // But the catch-all rows must still be present
       expect(result).toContain('common/_INDEX.md');
       expect(result).toContain('quality-engineering/_INDEX.md');
@@ -923,7 +991,7 @@ describe('IndexGeneratorService', () => {
       });
 
       // No withMetadata() call — should read from disk
-      const fresh = new IndexGeneratorService();
+      const fresh = new IndexGeneratorServiceImpl();
       const result = await fresh.assembleRouterIndex('/agent/skills');
 
       expect(result).toContain('`*.go`');
