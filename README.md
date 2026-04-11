@@ -253,6 +253,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for design details and [CLI Architectur
 
 | Version | Date | Skills | Avg Tokens | Savings (%) | Report |
 | --- | --- | --- | --- | --- | --- |
+| v2.1.2 | 2026-04-11 | 237 | 516 | 86% | [Report](benchmarks/archive/v2.1.2.md) |
 | v2.1.1 | 2026-04-11 | 237 | 516 | 86% | [Report](benchmarks/archive/v2.1.1.md) |
 | v2.1.0 | 2026-04-04 | 237 | 526 | 86% | [Report](benchmarks/archive/v2.1.0.md) |
 | v2.0.1 | 2026-03-30 | 238 | 527 | 86% | [Report](benchmarks/archive/v2.0.1.md) |
@@ -262,4 +263,3 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for design details and [CLI Architectur
 | v1.10.0 | 2026-03-16 | 229 | 434 | 88% | [Report](benchmarks/archive/v1.10.0.md) |
 | v1.9.3 | 2026-03-15 | 229 | 460 | 87% | [Report](benchmarks/archive/v1.9.3.md) |
 | v1.9.2 | 2026-03-07 | 228 | 458 | 87% | [Report](benchmarks/archive/v1.9.2.md) |
-| v1.9.1 | 2026-03-07 | 228 | 458 | 87% | [Report](benchmarks/archive/v1.9.1.md) |
