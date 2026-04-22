@@ -149,5 +149,28 @@ describe('InitService', () => {
         [], // Empty workflows
       );
     });
+
+    it('should handle mcpScope when provided', async () => {
+      const answers: InitAnswers = {
+        framework: 'flutter',
+        agents: [Agent.Cursor],
+        registry: 'url',
+        mcpEnabled: true,
+        mcpScope: 'project',
+      };
+      await initService.buildAndSaveConfig(answers, {}, '/tmp');
+      expect(mockConfigService.buildInitialConfig).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(Array),
+        expect.any(String),
+        expect.any(Object),
+        expect.any(Array),
+        expect.any(Array),
+      );
+      expect(fs.outputFile).toHaveBeenCalledWith(
+        expect.stringContaining('.skillsrc'),
+        expect.stringContaining('scope: project'),
+      );
+    });
   });
 });

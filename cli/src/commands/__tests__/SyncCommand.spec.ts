@@ -55,6 +55,9 @@ describe('SyncCommand', () => {
         skills: {
           common: { ref: 'v1.0.0' },
         },
+        // Mark MCP as already-prompted-and-disabled so Phase 7 fast-returns.
+        // Tests that exercise the MCP path should override this.
+        mcp: { enabled: false, scope: 'disabled', prompted: true },
       }),
       saveConfig: vi.fn(),
     } as unknown as Mocked<ConfigService>;
@@ -211,6 +214,160 @@ describe('SyncCommand', () => {
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('Non-interactive environment detected'),
       );
+    });
+  });
+
+  describe('Phase 7 — MCP Integration', () => {
+    let mockMcpService: any;
+    let originalIsTTY: boolean | undefined;
+
+    beforeEach(() => {
+      mockMcpService = {
+        install: vi.fn().mockResolvedValue({
+          projectWrites: [],
+          userWrites: [],
+          declined: [],
+          snippets: [],
+          unsupported: [],
+        }),
+      };
+      // @ts-expect-error - testing private instance patching
+      command.mcpService = mockMcpService;
+      originalIsTTY = process.stdin.isTTY;
+      process.stdin.isTTY = true;
+    });
+
+    afterEach(() => {
+      if (originalIsTTY !== undefined) {
+        process.stdin.isTTY = originalIsTTY;
+      }
+    });
+
+    it('should prompt for consent if not yet prompted (TTY)', async () => {
+      mockConfigService.loadConfig.mockResolvedValue({
+        registry: 'url',
+        skills: {},
+        mcp: { enabled: false, scope: 'disabled', prompted: false },
+      } as any);
+
+      vi.mocked(inquirer.prompt).mockResolvedValue({ enabled: true, scope: 'project' });
+
+      await command.run();
+
+      expect(inquirer.prompt).toHaveBeenCalled();
+      expect(mockConfigService.saveConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mcp: expect.objectContaining({ enabled: true, prompted: true }),
+        }),
+      );
+    });
+
+    it('should skip consent prompt if not yet prompted (non-TTY)', async () => {
+      process.stdin.isTTY = false;
+      mockConfigService.loadConfig.mockResolvedValue({
+        registry: 'url',
+        skills: {},
+        mcp: { enabled: false, scope: 'disabled', prompted: false },
+      } as any);
+
+      await command.run();
+
+      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('MCP integration not yet configured'),
+      );
+    });
+
+    it('should execute install if MCP is enabled', async () => {
+      mockConfigService.loadConfig.mockResolvedValue({
+        registry: 'url',
+        skills: {},
+        mcp: { enabled: true, scope: 'project', prompted: true },
+      } as any);
+
+      await command.run();
+
+      expect(mockMcpService.install).toHaveBeenCalled();
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('Wiring MCP server'),
+      );
+    });
+
+    it('should use conservative default for --yes during consent', async () => {
+      mockConfigService.loadConfig.mockResolvedValue({
+        registry: 'url',
+        skills: {},
+        mcp: { enabled: false, scope: 'disabled', prompted: false },
+      } as any);
+
+      await command.run({ yes: true });
+
+      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(mockConfigService.saveConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mcp: expect.objectContaining({ enabled: true, scope: 'project', prompted: true }),
+        }),
+      );
+    });
+
+    it('should handle different MCP install report outcomes', async () => {
+      mockConfigService.loadConfig.mockResolvedValue({
+        registry: 'url',
+        skills: {},
+        mcp: { enabled: true, scope: 'project', prompted: true },
+      } as any);
+
+      mockMcpService.install.mockResolvedValue({
+        projectWrites: [
+          { agent: 'claude', file: 'f1', action: 'added' },
+          { agent: 'cursor', file: 'f2', action: 'updated' },
+          { agent: 'trae', file: 'f3', action: 'up-to-date' },
+        ],
+        userWrites: [{ agent: 'claude', file: 'u1', action: 'added' }],
+        declined: [{ agent: 'cursor', file: 'u2' }],
+        snippets: [{ agent: 'claude', file: 's1' }],
+        unsupported: ['copilot'],
+      });
+
+      await command.run();
+
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('+ added'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('~ updated'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('= up-to-date'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('+ wrote'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('(declined)'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('snippet(s) written'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('no MCP support yet'));
+    });
+
+    it('should handle user declining MCP consent', async () => {
+      mockConfigService.loadConfig.mockResolvedValue({
+        registry: 'url',
+        skills: {},
+        mcp: { enabled: false, scope: 'disabled', prompted: false },
+      } as any);
+
+      vi.mocked(inquirer.prompt).mockResolvedValue({ enabled: false });
+
+      await command.run();
+
+      expect(mockConfigService.saveConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mcp: expect.objectContaining({ enabled: false, scope: 'disabled', prompted: true }),
+        }),
+      );
+      expect(mockMcpService.install).not.toHaveBeenCalled();
+    });
+
+    it('should fast-return if MCP is disabled after prompting', async () => {
+      mockConfigService.loadConfig.mockResolvedValue({
+        registry: 'url',
+        skills: {},
+        mcp: { enabled: false, scope: 'disabled', prompted: true },
+      } as any);
+
+      await command.run();
+      expect(mockMcpService.install).not.toHaveBeenCalled();
     });
   });
 });
