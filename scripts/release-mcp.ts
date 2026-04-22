@@ -16,7 +16,6 @@ const CHANGELOG_PATH = path.join(ROOT_DIR, 'CHANGELOG.md');
 
 const isDryRun = process.argv.includes('--dry-run');
 const noEdit = process.argv.includes('--no-edit');
-const skipPublish = process.argv.includes('--skip-publish');
 
 async function main() {
   console.log(pc.bold(pc.blue('\n🚀 Agent Skills MCP - Release Manager\n')));
@@ -94,10 +93,11 @@ async function main() {
         if (logs) {
           defaultNotes = getSmartChangelog(logs);
         } else {
-          defaultNotes = '### Initial MCP Release';
+          defaultNotes = '### Initial Release';
         }
-      } catch {
-        defaultNotes = '### MCP Update';
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.error(pc.red(`❌ Failed to auto-generate logs: ${msg}`));
       }
 
       notes = defaultNotes;
@@ -113,20 +113,54 @@ async function main() {
           },
         ]);
         notes = response.notes;
+      } else {
+        console.log(
+          pc.gray('   (Using auto-generated notes due to --no-edit)'),
+        );
       }
     }
   }
 
-  // Preview
-  console.log(pc.bold(pc.yellow('\n👀 Release Plan:')));
+  // DRY RUN / PLAN PREVIEW
+  console.log(pc.bold(pc.yellow('\n👀 Dry Run / Release Plan:')));
+
+  console.log(pc.bold('1. Update Versions:'));
+  console.log(pc.dim(`   - mcp/package.json`));
   console.log(`   Version: ${currentVersion} -> ${pc.green(finalVersion)}`);
-  console.log(`   Tag: ${pc.cyan(tagName)}`);
-  console.log(
-    `   Publish to npm: ${skipPublish ? pc.yellow('skipped') : pc.green('yes')}`,
-  );
+
+  console.log(pc.bold('\n2. Update Changelog:'));
+  if (notes) {
+    console.log(pc.dim(`   File: ${CHANGELOG_PATH}`));
+    console.log(pc.dim('   --- Preview ---'));
+    console.log(
+      pc.cyan(`   ## [${tagName}] - ${new Date().toISOString().split('T')[0]}`),
+    );
+    console.log(pc.cyan(`   **Category**: MCP Server\n`));
+    console.log(
+      pc.cyan(
+        notes
+          .split('\n')
+          .map((l) => '   ' + l)
+          .join('\n'),
+      ),
+    );
+  } else {
+    console.log(pc.dim('   (Skipped)'));
+  }
+
+  console.log(pc.bold('\n3. Git Operations:'));
+  const commands = [
+    `git add .`,
+    `git commit -m "chore(release): ${tagName}"`,
+    `git tag ${tagName}`,
+    `git push && git push origin ${tagName}`,
+  ];
+
+  commands.forEach((cmd) => console.log(pc.dim(`   $ ${cmd}`)));
+  console.log('');
 
   if (isDryRun) {
-    console.log(pc.magenta('\n✨ Dry run complete.'));
+    console.log(pc.magenta('\n✨ Dry run complete. No changes were made.'));
     return;
   }
 
@@ -155,27 +189,14 @@ async function main() {
       await updateChangelog(CHANGELOG_PATH, tagName, 'MCP Server', notes);
     }
 
-    // 3. Build before tagging — verify the package is shippable
-    console.log(pc.gray('\n🔨 Building MCP package...'));
-    execFileSync('pnpm', ['--filter', './mcp', 'build'], {
-      cwd: ROOT_DIR,
-      stdio: 'inherit',
-    });
+    console.log(pc.gray('Executing git operations...'));
 
-    // 4. Run tests — never ship a broken release
-    console.log(pc.gray('\n🧪 Running MCP tests...'));
-    execFileSync('pnpm', ['--filter', './mcp', 'test'], {
-      cwd: ROOT_DIR,
-      stdio: 'inherit',
-    });
-
-    // 5. Git operations
     const gitRun = (args: string[]) =>
       execFileSync('git', args, { cwd: ROOT_DIR, stdio: 'inherit' });
 
-    console.log(pc.gray('\n📦 Preparing git commit...'));
     gitRun(['add', '.']);
 
+    // Check if there's anything to commit
     const status = execFileSync('git', ['status', '--porcelain'], {
       cwd: ROOT_DIR,
       encoding: 'utf-8',
@@ -187,53 +208,22 @@ async function main() {
       console.log(pc.yellow('  (No changes to commit)'));
     }
 
-    // 6. Tag
+    // Check if tag exists
     try {
-      execFileSync('git', ['rev-parse', tagName], { stdio: 'ignore' });
-      console.log(pc.yellow(`\n⚠️  Tag ${tagName} already exists locally.`));
-      const { overwriteTag } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'overwriteTag',
-          message: 'Force recreate tag?',
-          default: false,
-        },
-      ]);
-      if (overwriteTag) {
-        gitRun(['tag', '-f', tagName]);
-      } else {
-        console.log(pc.yellow('Using existing tag.'));
-      }
+      execFileSync('git', ['rev-parse', tagName], {
+        stdio: 'ignore',
+        cwd: ROOT_DIR,
+      });
+      console.log(pc.yellow(`  (Tag ${tagName} already exists, skipping tag)`));
     } catch {
       gitRun(['tag', tagName]);
     }
 
-    // 7. Push
     console.log(pc.cyan('\n⚠️  Pushing to remote...'));
     gitRun(['push']);
-    gitRun(['push', 'origin', tagName, '--force']);
+    gitRun(['push', 'origin', tagName]);
 
-    // 8. npm publish
-    if (!skipPublish) {
-      console.log(pc.gray('\n📤 Publishing to npm...'));
-      execFileSync('npm', ['publish', '--access', 'public'], {
-        cwd: MCP_DIR,
-        stdio: 'inherit',
-      });
-    } else {
-      console.log(
-        pc.yellow('\n⚠️  --skip-publish set — npm publish was NOT executed.'),
-      );
-    }
-
-    console.log(pc.bold(pc.magenta(`\n🎉 MCP Release ${tagName} complete!`)));
-    console.log(
-      pc.gray(
-        skipPublish
-          ? 'Run `npm publish --access public` from mcp/ when ready.\n'
-          : 'Available shortly via `npx agent-skills-standard-mcp`.\n',
-      ),
-    );
+    console.log(pc.bold(pc.magenta(`\n🎉 MCP Release ${tagName} is live!`)));
   } catch (error) {
     console.error(pc.red(`\n❌ Release operation failed:`));
     console.error(error instanceof Error ? error.message : String(error));

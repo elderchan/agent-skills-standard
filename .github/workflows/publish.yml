@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'cli-v*'
+      - 'mcp-v*'
       - 'flutter-v*'
       - 'dart-v*'
       - 'nestjs-v*'
