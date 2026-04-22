@@ -9,7 +9,6 @@
 > ---
 
 <!-- SKILLS_INDEX_START -->
-
 ## Agent Skills Index
 
 > [!CRITICAL] Zero-Trust: Read the matching `SKILL.md` BEFORE writing any code.
@@ -27,13 +26,14 @@ Each `_INDEX.md` has two sections - follow both:
 
 > `<SKILLS>` = your agent's skill directory (e.g., `.claude/skills/`, `.cursor/skills/`, `.gemini/skills/`).
 
-| File type                | Read category index             |
-| ------------------------ | ------------------------------- |
-| `*.ts`, `*.tsx`          | `<SKILLS>/typescript/_INDEX.md` |
-| `*.spec.ts`, `*.test.ts` | `<SKILLS>/common/_INDEX.md`     |
-| Any file (keyword match) | `<SKILLS>/common/_INDEX.md`     |
+| File type | Read category index |
+| --------- | ------------------- |
+| `*.ts`, `*.tsx` | `<SKILLS>/typescript/_INDEX.md` |
+| `*.spec.ts`, `*.test.ts` | `<SKILLS>/common/_INDEX.md` |
+| Any file (keyword match) | `<SKILLS>/common/_INDEX.md` |
 
 > [!NOTE] **Test/spec file precedence:** `.spec.ts`, `.test.ts` -> use the `common` row (takes precedence over the generic `*.ts` row). `.spec.tsx`, `.test.tsx` -> use the `react` row (takes precedence over the generic `*.tsx` row).
+
 > [!TIP] **Indirect phrasing counts.** "make it faster" -> performance, "broken query" -> database, "login flow" -> auth.
 
 <!-- SKILLS_INDEX_END -->
