@@ -1,6 +1,22 @@
 ---
 name: java-language
-description: 'Modern Java 21+ standards including Records, Pattern Matching, and Virtual Threads. Use when working with Java records, sealed classes, switch expressions, text blocks, Optional, or upgrading from older Java versions. (triggers: **/*.java, pom.xml, build.gradle, record, sealed, switch, var, Optional, stream, VirtualThread, instanceof, text block)'
+description: Modern Java 21+ standards including Records, Pattern Matching, and Virtual Threads. Use when working with Java records, sealed classes, switch expressions, text blocks, Optional, or upgrading from older Java versions.
+metadata:
+  triggers:
+    files:
+    - '**/*.java'
+    - 'pom.xml'
+    - 'build.gradle'
+    keywords:
+    - record
+    - sealed
+    - switch
+    - var
+    - Optional
+    - stream
+    - VirtualThread
+    - instanceof
+    - text block
 ---
 # Java Language Patterns
 
@@ -12,7 +28,7 @@ description: 'Modern Java 21+ standards including Records, Pattern Matching, and
 - **Records**: Use record for immutable DTOs/Value Objects. Records auto-generate equals, hashCode, toString. Avoid Lombok @Data on Pojos.
 - **Local Variables**: Use **`var`** for inferred types. Explicitly type interface variables.
 - **Switch**: Use Switch Expressions (->) and Pattern Matching over complex if/else chains.
-- **Text Blocks**: Use **`""" (Text Blocks)`** for JSON, SQL, or multi-line strings.
+- **Text Blocks**: Use **`"" (Text Blocks)`** for JSON, SQL, or multi-line strings.
 - **Pattern Matching**: Use **`instanceof`** with pattern binding: `if (obj instanceof String s)`.
 - **Sealed Classes**: Use sealed interface/class with permits clause for domain-driven restricted hierarchies. Switch expressions then exhaustive switch (compiler-verified).
 - **Collections**: Use **`List.of()`**, **`Map.of()`**, and **`Set.of()`** for immutable collections.

@@ -1,6 +1,24 @@
 ---
 name: kotlin-language
-description: "Write idiomatic Kotlin 1.9+ with null safety, sealed classes, and expression syntax. Use when working with Kotlin null safety, data classes, sealed interfaces, extension functions, or migrating Java code to Kotlin. (triggers: **/*.kt, **/*.kts, val, var, ?., ?:, !!, data class, sealed, when, extension, lazy, lateinit, object)"
+description: Write idiomatic Kotlin 1.9+ with null safety, sealed classes, and expression syntax. Use when working with Kotlin null safety, data classes, sealed interfaces, extension functions, or migrating Java code to Kotlin.
+metadata:
+  triggers:
+    files:
+    - '**/*.kt'
+    - '**/*.kts'
+    keywords:
+    - val
+    - var
+    - "?."
+    - "?:"
+    - "!!"
+    - data class
+    - sealed
+    - when
+    - extension
+    - lazy
+    - lateinit
+    - object
 ---
 # Kotlin Language Patterns
 
@@ -15,7 +33,7 @@ description: "Write idiomatic Kotlin 1.9+ with null safety, sealed classes, and 
 - **Classes**: Use `data class` for DTOs. Use `sealed interface/class` for state hierarchies (e.g., `Success`, `Error`, `Loading`). Access members as computed property rather than function.
 - **Extension Functions**: Prefer over utility classes (`StringUtil`). Keep private/internal if module-specific.
 - **Named Arguments**: Use for clarity, especially with booleans or multiple same-type params.
-- **String Templates**: Use `"$var"` over concatenation. Use `"""` for multiline strings (SQL/JSON).
+- **String Templates**: Use `"$var"` over concatenation. Use `""` for multiline strings (SQL/JSON).
 
 ## Anti-Patterns
 

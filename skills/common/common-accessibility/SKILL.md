@@ -1,8 +1,23 @@
 ---
 name: common-accessibility
-description: 'Enforce WCAG 2.2 AA compliance with semantic HTML, ARIA roles, keyboard navigation, and color contrast standards for web UIs. Use when building interactive components, adding form labels, fixing focus traps, or auditing a11y compliance. (triggers: **/*.tsx, **/*.jsx, **/*.html, **/*.vue, **/*.component.html, accessibility, a11y, wcag, aria, screen reader, focus, alt text)'
+description: Enforce WCAG 2.2 AA compliance with semantic HTML, ARIA roles, keyboard navigation, and color contrast standards for web UIs. Use when building interactive components, adding form labels, fixing focus traps, or auditing a11y compliance.
+metadata:
+  triggers:
+    files:
+    - '**/*.tsx'
+    - '**/*.jsx'
+    - '**/*.html'
+    - '**/*.vue'
+    - '**/*.component.html'
+    keywords:
+    - accessibility
+    - a11y
+    - wcag
+    - aria
+    - screen reader
+    - focus
+    - alt text
 ---
-
 # Common Accessibility (a11y) Standards
 
 ## **Priority: P1 (OPERATIONAL)**
@@ -49,7 +64,7 @@ ARIA supplements native HTML when insufficient (e.g., custom widgets). Rules:
 
 ## 🖼 Images & Media
 
-- Decorative images: `alt=""` (empty, not missing).
+- Decorative images: `alt="` (empty, not missing).
 - Informative images: descriptive `alt` — what image conveys, not "image of…".
 - Complex charts/graphs: text summary or data table alternative.
 - Video: Captions mandatory. Audio descriptions for visual-only content.

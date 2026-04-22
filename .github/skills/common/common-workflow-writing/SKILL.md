@@ -1,6 +1,6 @@
 ---
 name: common-workflow-writing
-description: "Rules for writing concise, token-efficient workflow and skill files. Prevents over-building that requires costly optimization passes. Use when creating or editing workflow files, SKILL.md files, or new skill definitions. (triggers: .agent/workflows/*.md, SKILL.md, create workflow, write workflow, new skill, new workflow)"
+description: 'Rules for writing concise, token-efficient workflow and skill files. Prevents over-building that requires costly optimization passes. Use when creating or editing workflow files, SKILL.md files, or new skill definitions. (triggers: .agent/workflows/*.md, SKILL.md, create workflow, write workflow, new skill, new workflow)'
 ---
 
 # Workflow Writing Standard
@@ -9,10 +9,10 @@ description: "Rules for writing concise, token-efficient workflow and skill file
 
 ## Core Rules
 
-- **Templates, not examples**: Workflows define _structure_, not pre-filled data. The agent generates data at runtime.
+- **Templates, not examples**: Workflows define _structure_, not pre-filled data. agent generates data at runtime.
 - **No example rows in tables**: Include headers + 1 skeleton row only. Never populate with fake data.
-- **No prose explanations**: If a bullet or command achieves the same result, delete the paragraph.
-- **No pre-answered questions**: Don't document what the agent _will_ output — let it output it.
+- **No prose explanations**: If bullet or command achieves same result, delete paragraph.
+- **No pre-answered questions**: Don't document what agent _will_ output — let it output it.
 - **Merge sequential steps**: If two steps always happen together, they are one step.
 
 ## Size Limits
@@ -37,12 +37,12 @@ description: "Rules for writing concise, token-efficient workflow and skill file
 - **No verbose step preambles**: `"Before we start, it's important to understand..."` → Delete
 - **No pre-filled report rows**: `| Security | P0 | ✅ PASS | CLIENT_ID moved to env |` → Delete
 - **No repeated examples**: Same concept shown twice in different formats → Keep one
-- **No "How to do X" sections**: The step IS the instruction
+- **No "How to X" sections**: step instruction
 - **No caution blocks for obvious rules**: Reserve `> ⚠️` for genuinely non-obvious risks
 
 ## Quick Self-Check Before Saving
 
-- [ ] Can the agent reconstruct any removed content at runtime from context? If yes → remove it
-- [ ] Is every table row real structure, not example data?
-- [ ] Are there any paragraphs a bullet list could replace?
-- [ ] Would cutting this in half still give the agent enough to act on?
+- [ ] Can agent reconstruct any removed content at runtime from context? If yes → remove it
+- [ ] every table row real structure, not example data?
+- [ ] there any paragraphs bullet list could replace?
+- [ ] Would cutting this in half still give agent enough to act on?
