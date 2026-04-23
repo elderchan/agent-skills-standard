@@ -31,7 +31,6 @@ export interface McpTarget {
 export const SERVER_NAME = 'agent-skills-standard';
 export const PACKAGE = 'agent-skills-standard-mcp';
 
-
 const getTargets = (home = os.homedir()): Record<string, McpTarget> => {
   const HOME = home;
   return {
@@ -45,28 +44,118 @@ const getTargets = (home = os.homedir()): Record<string, McpTarget> => {
     [Agent.Cursor]: {
       agent: Agent.Cursor,
       projectFile: '.cursor/mcp.json',
-      userFile: path.join(HOME, '.cursor', 'mcp.json'),
+      userFile: (() => {
+        if (process.platform === 'win32') {
+          return path.join(
+            HOME,
+            'AppData',
+            'Roaming',
+            'Cursor',
+            'User',
+            'globalStorage',
+            'mcp.json',
+          );
+        }
+        if (process.platform === 'darwin') {
+          return path.join(
+            HOME,
+            'Library',
+            'Application Support',
+            'Cursor',
+            'User',
+            'globalStorage',
+            'mcp.json',
+          );
+        }
+        if (process.platform === 'linux') {
+          return path.join(
+            HOME,
+            '.config',
+            'Cursor',
+            'User',
+            'globalStorage',
+            'mcp.json',
+          );
+        }
+        return path.join(HOME, '.cursor', 'mcp.json');
+      })(),
       key: 'mcpServers',
       shape: 'map',
     },
     [Agent.Antigravity]: {
       agent: Agent.Antigravity,
-      projectFile: '.antigravity/mcp.json',
-      userFile: null,
+      projectFile: '.antigravity/mcp_config.json',
+      userFile: (() => {
+        if (process.platform === 'win32') {
+          return path.join(
+            HOME,
+            'AppData',
+            'Local',
+            'Google',
+            'Antigravity',
+            'mcp_config.json',
+          );
+        }
+        if (process.platform === 'darwin') {
+          return path.join(
+            HOME,
+            'Library',
+            'Application Support',
+            'Google',
+            'Antigravity',
+            'mcp_config.json',
+          );
+        }
+        return path.join(HOME, '.gemini', 'antigravity', 'mcp_config.json');
+      })(),
       key: 'mcpServers',
       shape: 'map',
     },
     [Agent.Kiro]: {
       agent: Agent.Kiro,
       projectFile: '.kiro/settings/mcp.json',
-      userFile: null,
+      userFile: (() => {
+        if (process.platform === 'win32') {
+          return path.join(
+            HOME,
+            'AppData',
+            'Roaming',
+            'Kiro',
+            'settings',
+            'mcp.json',
+          );
+        }
+        return path.join(HOME, '.kiro', 'settings', 'mcp.json');
+      })(),
       key: 'mcpServers',
       shape: 'map',
     },
     [Agent.Windsurf]: {
       agent: Agent.Windsurf,
       projectFile: '.codeium/windsurf/mcp_config.json',
-      userFile: path.join(HOME, '.codeium', 'windsurf', 'mcp_config.json'),
+      userFile: (() => {
+        if (process.platform === 'win32') {
+          return path.join(
+            HOME,
+            'AppData',
+            'Roaming',
+            'Codeium',
+            'Windsurf',
+            'mcp_config.json',
+          );
+        }
+        if (process.platform === 'darwin') {
+          return path.join(
+            HOME,
+            'Library',
+            'Application Support',
+            'Codeium',
+            'Windsurf',
+            'mcp_config.json',
+          );
+        }
+        return path.join(HOME, '.codeium', 'windsurf', 'mcp_config.json');
+      })(),
       key: 'mcpServers',
       shape: 'map',
     },
@@ -79,7 +168,7 @@ const getTargets = (home = os.homedir()): Record<string, McpTarget> => {
     },
     [Agent.Roo]: {
       agent: Agent.Roo,
-      projectFile: '.roo/mcp.json',
+      projectFile: '.roo/mcp_config.json',
       userFile: null,
       key: 'mcpServers',
       shape: 'map',
@@ -88,6 +177,64 @@ const getTargets = (home = os.homedir()): Record<string, McpTarget> => {
       agent: Agent.Gemini,
       projectFile: '.gemini/settings.json',
       userFile: path.join(HOME, '.gemini', 'settings.json'),
+      key: 'mcpServers',
+      shape: 'map',
+    },
+    [Agent.Copilot]: {
+      agent: Agent.Copilot,
+      projectFile: '.vscode/mcp.json',
+      userFile: (() => {
+        if (process.platform === 'darwin') {
+          return path.join(
+            HOME,
+            'Library',
+            'Application Support',
+            'Code',
+            'User',
+            'globalStorage',
+            'github.copilot-chat',
+            'mcp.json',
+          );
+        }
+        if (process.platform === 'win32') {
+          return path.join(
+            HOME,
+            'AppData',
+            'Roaming',
+            'Code',
+            'User',
+            'globalStorage',
+            'github.copilot-chat',
+            'mcp.json',
+          );
+        }
+        if (process.platform === 'linux') {
+          return path.join(
+            HOME,
+            '.config',
+            'Code',
+            'User',
+            'globalStorage',
+            'github.copilot-chat',
+            'mcp.json',
+          );
+        }
+        return null;
+      })(),
+      key: 'servers',
+      shape: 'map',
+    },
+    [Agent.OpenCode]: {
+      agent: Agent.OpenCode,
+      projectFile: 'opencode.json',
+      userFile: path.join(HOME, '.config', 'opencode', 'opencode.json'),
+      key: 'mcp',
+      shape: 'map',
+    },
+    [Agent.OpenAI]: {
+      agent: Agent.OpenAI,
+      projectFile: '.codex/mcp.json',
+      userFile: path.join(HOME, '.codex', 'mcp.json'),
       key: 'mcpServers',
       shape: 'map',
     },
