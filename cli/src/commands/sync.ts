@@ -8,6 +8,7 @@ import {
   McpConfigService,
   defaultMcpConfig,
 } from '../services/McpConfigService';
+import { HookService } from '../services/HookService';
 import { SyncService } from '../services/SyncService';
 
 /**
@@ -19,24 +20,27 @@ export class SyncCommand {
   private detectionService: DetectionService;
   private syncService: SyncService;
   private mcpService: McpConfigService;
+  private hookService: HookService;
 
   constructor(
     configService?: ConfigService,
     detectionService?: DetectionService,
     syncService?: SyncService,
     mcpService?: McpConfigService,
+    hookService?: HookService,
   ) {
     this.configService = configService || new ConfigService();
     this.detectionService = detectionService || new DetectionService();
     this.syncService = syncService || new SyncService();
     this.mcpService = mcpService || new McpConfigService();
+    this.hookService = hookService || new HookService();
   }
 
   /**
    * Executes the synchronization flow.
    * Reconciles dependencies, fetches skills and workflows from the registry, and updates AGENTS.md.
    */
-  async run(options: { yes?: boolean } = {}) {
+  async run(options: { yes?: boolean; snippets?: boolean } = {}) {
     try {
       // 1. Load Config
       const config = await this.configService.loadConfig();
@@ -120,6 +124,9 @@ export class SyncCommand {
       await this.syncService.writeSkills(skills, config);
       await this.syncService.writeWorkflows(workflows, config);
 
+      // 5b. Sync specialists (sub-agents)
+      await this.syncService.syncSpecialists(config);
+
       // 6. Automatically apply framework-specific indices to AGENTS.md
       await this.syncService.applyIndices(config, config.agents);
 
@@ -127,6 +134,9 @@ export class SyncCommand {
 
       // 7. MCP integration (consent-respecting — see McpConfigService).
       await this.runMcpPhase(config, options);
+
+      // 8. Hook installation — always runs; idempotent.
+      await this.runHookPhase(config);
     } catch (error) {
       if (error instanceof Error) {
         console.error(pc.red('❌ Sync failed:'), error.message);
@@ -147,12 +157,22 @@ export class SyncCommand {
    */
   private async runMcpPhase(
     config: SkillConfig,
-    options: { yes?: boolean },
+    options: { yes?: boolean; snippets?: boolean },
   ): Promise<void> {
-    const mcp = config.mcp ?? defaultMcpConfig();
+    const mcp = config.mcp ? { ...config.mcp } : defaultMcpConfig();
     const agents = config.agents ?? [];
 
-    if (!mcp.prompted || (!mcp.enabled && mcp.prompted)) {
+    const snippetOnlyOverride =
+      options.snippets === true && (!mcp.enabled || mcp.scope === 'disabled');
+    if (snippetOnlyOverride) {
+      mcp.enabled = true;
+      mcp.scope = 'snippets-only';
+      mcp.snippets = true;
+    } else if (options.snippets !== undefined) {
+      mcp.snippets = options.snippets;
+    }
+
+    if (!snippetOnlyOverride && (!mcp.prompted || (!mcp.enabled && mcp.prompted))) {
       if (!process.stdin.isTTY && !options.yes) {
         if (!mcp.prompted) {
           console.log(
@@ -179,7 +199,15 @@ export class SyncCommand {
       await this.configService.saveConfig(config);
     }
 
-    const finalMcp = config.mcp ?? defaultMcpConfig();
+    const finalMcp = config.mcp ? { ...config.mcp } : defaultMcpConfig();
+    if (snippetOnlyOverride) {
+      finalMcp.enabled = true;
+      finalMcp.scope = 'snippets-only';
+      finalMcp.snippets = true;
+    } else if (options.snippets !== undefined) {
+      finalMcp.snippets = options.snippets;
+    }
+
     if (!finalMcp.enabled || finalMcp.scope === 'disabled') {
       return;
     }
@@ -305,5 +333,30 @@ export class SyncCommand {
       },
     ]);
     return decision;
+  }
+
+  /**
+   * Phase 8 — Hook installation.
+    * Idempotent: registers the Claude PreToolUse entry and keeps managed hook
+    * files up to date. Claude's script is preserved if already customized; Kiro's
+    * markdown hook is kept in sync with the embedded template.
+   */
+  private async runHookPhase(config: SkillConfig): Promise<void> {
+    const agents = config.agents ?? [];
+    if (agents.length === 0) return;
+
+    const report = await this.hookService.install({
+      rootDir: process.cwd(),
+      agents,
+    });
+
+    const writes = report.writes.filter((w) => w.action !== 'skipped-existing');
+    if (writes.length === 0) return;
+
+    console.log(pc.cyan('\n🪝 Updating skill-loader hooks...'));
+    for (const w of writes) {
+      const tag = w.action === 'added' ? pc.green('+ added   ') : pc.cyan('~ updated ');
+      console.log(`  ${tag} ${w.agent.padEnd(12)} ${pc.gray(w.file)}`);
+    }
   }
 }

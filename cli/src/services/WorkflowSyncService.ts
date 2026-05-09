@@ -11,7 +11,7 @@ import { WorkflowTransformer } from './utils/WorkflowTransformer';
  * Service responsible for synchronizing agent workflows from a remote registry.
  */
 export class WorkflowSyncService {
-  constructor(private githubService: GithubService) {}
+  constructor(private githubService: GithubService) { }
 
   /**
    * Reconciles workflows by discovering new ones in the registry and adding them to the config.
@@ -32,7 +32,7 @@ export class WorkflowSyncService {
 
     const availableWorkflows = treeData.tree
       .filter(
-        (f) => f.path.startsWith('.agent/workflows/') && f.path.endsWith('.md'),
+        (f) => f.path.startsWith('.agents/workflows/') && f.path.endsWith('.md'),
       )
       .map((f) => path.basename(f.path, '.md'));
 
@@ -95,7 +95,7 @@ export class WorkflowSyncService {
     }
 
     const workflowFiles = treeData.tree.filter((f) => {
-      if (!f.path.startsWith('.agent/workflows/') || !f.path.endsWith('.md'))
+      if (!f.path.startsWith('.agents/workflows/') || !f.path.endsWith('.md'))
         return false;
 
       if (typeof config.workflows === 'boolean') return config.workflows;
@@ -113,7 +113,7 @@ export class WorkflowSyncService {
       console.log(pc.gray(`    + Fetched ${files.length} workflows`));
       return [
         {
-          category: '.agent',
+          category: '.agents',
           skill: 'workflows',
           files: files.map((f) => ({
             name: path.basename(f.path),
@@ -128,7 +128,7 @@ export class WorkflowSyncService {
 
   /**
    * Writes collected workflows to each active agent's native format.
-   * - Antigravity/Kiro: .agent/workflows/*.md (native)
+    * - Antigravity/Kiro: .agents/workflows/*.md (native)
    * - Claude/Gemini: .<agent>/agents/workflow-*.md (agent definition)
    * - Cursor/Windsurf/Trae: .<agent>/rules/workflow-*.mdc (rule)
    * - Copilot: .github/instructions/workflow-*.instructions.md (instruction)

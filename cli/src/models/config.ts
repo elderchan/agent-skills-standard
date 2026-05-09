@@ -39,6 +39,8 @@ export interface McpConfig {
   prompted: boolean;
   /** Optional: pin a specific MCP server version. Default: tracks @latest via npx. */
   version?: string;
+  /** Whether to additionally generate snippet files during MCP install. Default: false. */
+  snippets?: boolean;
 }
 
 /**

@@ -5,6 +5,9 @@ import { Agent } from '../cli/src/constants';
 import { AgentBridgeService } from '../cli/src/services/AgentBridgeService';
 import { IndexGeneratorServiceImpl } from '../cli/src/services/IndexGeneratorServiceImpl';
 import { MarkdownUtils } from '../cli/src/services/utils/MarkdownUtils';
+import { SpecialistSyncService } from '../cli/src/services/SpecialistSyncService';
+import { ConfigService } from '../cli/src/services/ConfigService';
+import { SyncService } from '../cli/src/services/SyncService';
 
 function getFirstLine(text: string): string {
   if (!text) return '';
@@ -112,20 +115,20 @@ async function generate() {
 
   console.log('✅ Updated AGENTS.md in repo root (Router-style)');
 
-  const agents = [
-    Agent.Cursor,
-    Agent.Windsurf,
-    Agent.Trae,
-    Agent.Roo,
-    Agent.Kiro,
-    Agent.Antigravity,
-    Agent.Claude,
-    Agent.Copilot,
-  ];
+  const configService = new ConfigService();
+  const syncService = new SyncService();
+  const config = await configService.loadConfig();
+  
+  // Use the same resolution logic as the CLI (config > detection > empty)
+  const agents = config ? await syncService.resolveTargetAgents(config) : [];
 
-  const bridgeService = new AgentBridgeService();
-  await bridgeService.bridge(repoRoot, agents);
-  console.log('✅ Updated agent rule files');
+  if (agents.length > 0) {
+    const bridgeService = new AgentBridgeService();
+    await bridgeService.bridge(repoRoot, agents);
+    console.log(`✅ Updated agent rule files for: ${agents.join(', ')}`);
+  } else {
+    console.log('ℹ️ No active agents detected, skipping rule file updates.');
+  }
 
   // Update README.md with human-readable index
   const readmePath = path.join(skillsDir, 'README.md');
@@ -227,6 +230,17 @@ async function generate() {
       readmeContent = `${pre}\n${generatedIndex.trim()}\n${post}`;
       await fs.writeFile(readmePath, readmeContent, 'utf8');
       console.log('✅ Updated skills/README.md with auto-generated index');
+    }
+  }
+
+  // Final Phase: Sync specialists to native agent folders
+  if (agents.length > 0) {
+    try {
+      const specialistSyncService = new SpecialistSyncService();
+      await specialistSyncService.syncSpecialists(repoRoot, agents);
+      console.log(`✅ Synced specialists for: ${agents.join(', ')}`);
+    } catch (error) {
+      console.error('❌ Failed to sync specialists:', error);
     }
   }
 }
