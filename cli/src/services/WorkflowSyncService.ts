@@ -146,11 +146,13 @@ export class WorkflowSyncService {
   }
 
   /**
-   * Writes collected workflows to each active agent's native format.
-    * - Antigravity/Kiro: .agents/workflows/*.md (native)
-   * - Claude/Gemini: .<agent>/agents/workflow-*.md (agent definition)
-   * - Cursor/Windsurf/Trae: .<agent>/rules/workflow-*.mdc (rule)
-   * - Copilot: .github/instructions/workflow-*.instructions.md (instruction)
+   * Writes collected workflows from `.agents/workflows/*.md` to each active
+   * agent's native invocation surface.
+   * - Antigravity/Kiro: keep native markdown workflows
+   * - Claude/Roo/OpenCode: markdown command files
+   * - Gemini: TOML command files
+   * - Copilot: prompt files
+   * - Cursor/Trae/Codex: skill folders with SKILL.md
    */
   async writeWorkflows(
     workflows: CollectedSkill[],
@@ -169,19 +171,24 @@ export class WorkflowSyncService {
       const workflowDir = path.join(process.cwd(), agentDef.workflowPath);
       await fs.ensureDir(workflowDir);
 
-      // Calculate relative path from workflow dir to skills dir
-      const skillsDir = path.join(process.cwd(), agentDef.path);
-      const skillsRelative = path.relative(workflowDir, skillsDir);
+      // Calculate relative path from workflow dir to the source workflow files (.agents/workflows)
+      // This is used by Gemini (TOML) to reference the canonical markdown source.
+      const sourceWorkflowDir = path.join(process.cwd(), '.agents/workflows');
+      const workflowSourceRelative = path.relative(workflowDir, sourceWorkflowDir);
 
       let written = 0;
       for (const wf of workflows) {
         if (wf.skill !== 'workflows') continue;
 
         for (const fileItem of wf.files) {
-          const transformed = WorkflowTransformer.transform(
-            { name: fileItem.name, content: fileItem.content },
+          const parsed = WorkflowTransformer.parse({
+            name: fileItem.name,
+            content: fileItem.content,
+          });
+          const transformed = WorkflowTransformer.transformParsed(
+            parsed,
             agentDef.workflowFormat,
-            skillsRelative,
+            workflowSourceRelative,
           );
           if (!transformed) continue;
 
