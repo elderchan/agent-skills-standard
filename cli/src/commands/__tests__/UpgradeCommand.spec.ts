@@ -71,7 +71,11 @@ describe('UpgradeCommand', () => {
     vi.mocked(execSync).mockReturnValueOnce('2.0.0\n'); // version check
     vi.mocked(execSync).mockImplementationOnce(() => {
       throw new Error('Upgrade failed');
-    });
+    }); // versioned install fails
+    vi.mocked(execSync).mockImplementationOnce(() => {
+      throw new Error('Fallback failed');
+    }); // fallback install fails
+    
     vi.spyOn(upgradeCommand, 'detectPackageManager').mockReturnValue('npm');
 
     await upgradeCommand.run({});
@@ -81,6 +85,27 @@ describe('UpgradeCommand', () => {
     );
     expect(consoleLogMock).toHaveBeenCalledWith(
       expect.stringContaining('npm install -g agent-skills-standard@2.0.0'),
+    );
+  });
+
+  it('should retry with @latest if versioned install fails', async () => {
+    vi.mocked(execSync).mockReturnValueOnce('2.0.0\n'); // version check
+    vi.mocked(execSync).mockImplementationOnce(() => {
+      throw new Error('Version not found');
+    }); // versioned install fails
+    vi.mocked(execSync).mockReturnValueOnce('success\n'); // retry with @latest succeeds
+    vi.mocked(execSync).mockReturnValueOnce('2.0.0\n'); // verification succeeds
+    
+    vi.spyOn(upgradeCommand, 'detectPackageManager').mockReturnValue('npm');
+
+    await upgradeCommand.run({});
+
+    expect(execSync).toHaveBeenCalledWith(
+      expect.stringContaining('npm install -g agent-skills-standard@latest'),
+      expect.anything(),
+    );
+    expect(consoleLogMock).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to install v2.0.0. Retrying with @latest...'),
     );
   });
 
@@ -117,33 +142,34 @@ describe('UpgradeCommand', () => {
   });
 
   describe('detectPackageManager', () => {
+    const originalArgv = process.argv;
+
+    afterEach(() => {
+      process.argv = originalArgv;
+    });
+
     it('should detect pnpm from user agent', () => {
       process.env.npm_config_user_agent = 'pnpm/1.0.0';
+      process.argv = ['node', 'ags'];
       expect(upgradeCommand.detectPackageManager()).toBe('pnpm');
     });
 
     it('should detect yarn from user agent', () => {
       process.env.npm_config_user_agent = 'yarn/1.0.0';
+      process.argv = ['node', 'ags'];
       expect(upgradeCommand.detectPackageManager()).toBe('yarn');
     });
 
-    it('should detect pnpm if binary is available', () => {
+    it('should detect pnpm if execution path contains it', () => {
       delete process.env.npm_config_user_agent;
-      vi.mocked(execSync).mockReturnValueOnce('8.0.0\n'); // pnpm --version succeeds
+      process.argv = ['node', '/path/to/pnpm/bin/ags'];
+      vi.mocked(execSync).mockReturnValueOnce('8.0.0\n');
       expect(upgradeCommand.detectPackageManager()).toBe('pnpm');
     });
 
-    it('should detect yarn if pnpm is not available but yarn is', () => {
+    it('should fallback to npm if path is generic', () => {
       delete process.env.npm_config_user_agent;
-      vi.mocked(execSync).mockImplementationOnce(() => {
-        throw new Error('no pnpm');
-      });
-      vi.mocked(execSync).mockReturnValueOnce('1.22.0\n'); // yarn --version succeeds
-      expect(upgradeCommand.detectPackageManager()).toBe('yarn');
-    });
-
-    it('should fallback to npm if no others available', () => {
-      delete process.env.npm_config_user_agent;
+      process.argv = ['node', '/usr/local/bin/ags'];
       vi.mocked(execSync).mockImplementation(() => {
         throw new Error('none');
       });

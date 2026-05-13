@@ -199,6 +199,12 @@ async function main() {
 
   // Execute
   try {
+    console.log(pc.cyan('\n🏗️  Building CLI...'));
+    execFileSync('pnpm', ['--filter', './cli', 'build'], {
+      cwd: ROOT_DIR,
+      stdio: 'inherit',
+    });
+
     await updateCLIVersion(ROOT_DIR, finalVersion);
 
     if (notes) {

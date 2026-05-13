@@ -67,39 +67,46 @@ export class UpgradeCommand {
     try {
       console.log(pc.gray(`  Running: ${upgradeCmd}`));
 
-      execSync(upgradeCmd, { stdio: 'inherit' });
-
-      // Verify the upgrade
       try {
-        const output = execSync('ags -V', { encoding: 'utf8' }).trim();
+        execSync(upgradeCmd, { stdio: 'inherit' });
+      } catch {
+        console.log(pc.yellow(`⚠️  Failed to install v${latestVersion}. Retrying with @latest...`));
+        const fallbackCmd = this.getUpgradeCommand(pm, 'latest');
+        execSync(fallbackCmd, { stdio: 'inherit' });
+      }
+
+      // Soft Verification
+      try {
+        const output = execSync('ags -V', { encoding: 'utf8', stdio: 'pipe' }).trim();
         const lines = output.split('\n');
         const installedVersion = lines[lines.length - 1].trim();
 
-        if (installedVersion === latestVersion) {
+        if (installedVersion.includes(latestVersion)) {
           console.log(pc.green(`✅ Successfully upgraded to v${latestVersion}!`));
         } else {
           console.log(
             '\n' +
               pc.yellow(
-                `⚠️  Install finished, but 'ags -V' still reports v${installedVersion}.`,
+                `⚠️  Installation complete, but 'ags -V' still reports v${installedVersion}.`,
               ),
           );
           console.log(
-            pc.gray('   This is likely due to package manager caching or a PATH conflict.'),
+            pc.gray('   This is common if multiple versions are installed or your shell needs a restart.'),
           );
           console.log(
             pc.cyan(
-              `👉 Recommendation: Run '${pc.bold(upgradeCmd + ' --force')}' manually.`,
+              `👉 Recommendation: Restart your terminal or run: ${pc.bold(this.getUpgradeCommand(pm, latestVersion) + ' --force')}`,
             ),
           );
         }
       } catch {
-        console.log(pc.green(`✅ Install command completed.`));
+        console.log(pc.green('\n✅ Upgrade command finished.'));
+        console.log(pc.gray('   (Unable to verify version automatically, please check with \'ags -V\')'));
       }
 
       console.log(
         pc.cyan(
-          "Please restart your terminal if the version doesn't update immediately.",
+          "\nNote: You may need to restart your terminal session for changes to take effect.",
         ),
       );
     } catch {
@@ -109,22 +116,33 @@ export class UpgradeCommand {
   }
 
   private detectPackageManager(): 'npm' | 'pnpm' | 'yarn' {
-    const userAgent = process.env.npm_config_user_agent || '';
-    if (userAgent.includes('pnpm')) return 'pnpm';
-    if (userAgent.includes('yarn')) return 'yarn';
+    const execPath = process.argv[1] || '';
+    
+    // 1. Check if we are running from a pnpm global bin
+    if (execPath.includes('pnpm') || (process.env.npm_config_user_agent || '').includes('pnpm')) {
+      return 'pnpm';
+    }
 
-    // Fallback: Check for existing binaries
+    // 2. Check if we are running from a yarn global bin
+    if (execPath.includes('yarn') || (process.env.npm_config_user_agent || '').includes('yarn')) {
+      return 'yarn';
+    }
+
+    // 3. Check for nvm or npm paths
+    if (execPath.includes('nvm') || execPath.includes('npm')) {
+      return 'npm';
+    }
+
+    // Fallback: Check for existing binaries, but default to npm for maximum safety
     try {
       execSync('pnpm --version', { stdio: 'ignore' });
-      return 'pnpm';
+      // Only return pnpm if we're reasonably sure it's configured (avoiding PATH issues)
+      if (execPath.includes('pnpm')) return 'pnpm';
     } catch {
-      try {
-        execSync('yarn --version', { stdio: 'ignore' });
-        return 'yarn';
-      } catch {
-        return 'npm';
-      }
+      // pnpm not available or not configured for this path
     }
+
+    return 'npm';
   }
 
   private getUpgradeCommand(pm: 'npm' | 'pnpm' | 'yarn', version: string): string {
@@ -134,6 +152,7 @@ export class UpgradeCommand {
       case 'yarn':
         return `yarn global add agent-skills-standard@${version}`;
       default:
+        // Default to npm install -g
         return `npm install -g agent-skills-standard@${version}`;
     }
   }

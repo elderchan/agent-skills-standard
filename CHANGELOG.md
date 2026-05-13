@@ -5,6 +5,24 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [cli-v2.2.5] - 2026-05-13
+
+**Category**: 🛡️ Upgrade Resilience & Build Safety
+
+### Fixed
+
+- **`UpgradeCommand` Path-Awareness**: Refactored package manager detection to prioritize the binary's actual execution path. This prevents "split installations" where the CLI would try to upgrade using a different package manager than the one used for the original installation (e.g., using `pnpm` to upgrade an `npm` install).
+- **Deterministic Fallback**: Added an automatic retry with `@latest` if the version-specific installation fails, ensuring users can still upgrade even if npm mirrors are slightly out of sync.
+- **Graceful Verification**: Post-upgrade verification (`ags -V`) now handles environment-specific execution failures gracefully, providing diagnostic advice instead of reporting a false upgrade failure.
+
+### Changed
+
+- **Build Enforcement**: Updated the `release-cli.ts` script to strictly enforce a successful `pnpm build` before any Git tagging or pushing. This ensures that every released version is guaranteed to contain its compiled `dist/` artifacts.
+
+### Versions
+
+- **CLI**: `2.2.4` → `2.2.5`
+
 ## [cli-v2.2.4] - 2026-05-13
 
 **Category**: 🛠️ Workflow Transformation & Upgrade Reliability
