@@ -142,6 +142,15 @@ describe('WorkflowTransformer', () => {
       expect(result!.name).toBe('SKILL.md');
     });
 
+    it('should include yaml frontmatter required by skill loaders', () => {
+      const result = WorkflowTransformer.transform(SOURCE, 'skill');
+      expect(result!.content.startsWith('---\n')).toBe(true);
+      expect(result!.content).toContain('name: code-review');
+      expect(result!.content).toContain(
+        'description: "Run an AI-assisted PR code review."',
+      );
+    });
+
     it('should include the workflow description in a callout', () => {
       const result = WorkflowTransformer.transform(SOURCE, 'skill');
       expect(result!.content).toContain('> [!IMPORTANT]');
@@ -157,6 +166,15 @@ describe('WorkflowTransformer', () => {
       const result = WorkflowTransformer.transform(SOURCE, 'skill');
       expect(result!.content).toContain('## Step 1');
       expect(result!.content).toContain('git diff');
+    });
+
+    it('should safely escape quoted descriptions in skill frontmatter', () => {
+      const quoted = {
+        name: 'test.md',
+        content: '---\ndescription: Use "strict" mode.\n---\n# Test',
+      };
+      const result = WorkflowTransformer.transform(quoted, 'skill');
+      expect(result!.content).toContain('description: "Use \\"strict\\" mode."');
     });
   });
 });

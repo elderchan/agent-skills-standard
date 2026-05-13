@@ -194,15 +194,29 @@ Follow the exact steps in the workflow file.
     description: string,
     body: string,
   ): string {
+    const normalizedDescription =
+      description || `Workflow skill for ${name.replace(/-/g, ' ')}.`;
+    const escapedDescription = normalizedDescription
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"');
     const title = name
       .split('-')
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ');
 
-    return `# ${title} Skill
+return `---
+name: ${name}
+description: "${escapedDescription}"
+metadata:
+  triggers:
+    keywords:
+    - ${name.replace(/-/g, ' ')}
+    - workflow
+---
+# ${title} Skill
 
 > [!IMPORTANT]
-> ${description}
+> ${normalizedDescription}
 
 ## Instructions
 

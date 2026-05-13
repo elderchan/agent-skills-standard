@@ -2,11 +2,12 @@ registry: https://github.com/HoangNguyen0403/agent-skills-standard
 agents:
   - copilot
   - antigravity
+  - openai
 skills:
   typescript:
     ref: typescript-v1.3.3
   common:
-    ref: common-v2.0.4
+    ref: common-v2.0.5
     exclude:
       - common-accessibility
       - common-api-design
@@ -23,6 +24,9 @@ workflows:
   - plan-feature
   - skill-benchmark
   - pentest
+  - dev-fix
+  - implement-feature
+  - verify-bug
 mcp:
   enabled: true
   scope: project
