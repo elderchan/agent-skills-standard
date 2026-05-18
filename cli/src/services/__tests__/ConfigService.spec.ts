@@ -78,6 +78,30 @@ describe('ConfigService', () => {
       expect(config?.mcp?.snippets).toBe(true);
     });
 
+    it('should auto-migrate legacy "openai" agent to "codex" both in memory and on disk', async () => {
+      const legacyRawConfig = {
+        registry: 'https://example.com',
+        skills: {},
+        agents: ['openai', Agent.Cursor],
+        custom_overrides: [],
+      };
+
+      vi.mocked(fs.pathExists).mockImplementation(() => Promise.resolve(true));
+      vi.mocked(fs.readFile).mockImplementation(() =>
+        Promise.resolve('registry: https://example.com\nagents:\n  - openai\n  - cursor\nskills: {}' as unknown as Buffer),
+      );
+      vi.mocked(yaml.load).mockReturnValue(legacyRawConfig);
+      vi.mocked(yaml.dump).mockReturnValue('dumped yaml');
+
+      const config = await configService.loadConfig(mockCwd);
+
+      expect(config?.agents).toEqual([Agent.Codex, Agent.Cursor]);
+      expect(fs.outputFile).toHaveBeenCalledWith(
+        path.join(mockCwd, '.skillsrc'),
+        'dumped yaml',
+      );
+    });
+
     it('should throw error if .skillsrc format is invalid', async () => {
       vi.mocked(fs.pathExists).mockImplementation(() => Promise.resolve(true));
       vi.mocked(fs.readFile).mockImplementation(() =>

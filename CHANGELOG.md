@@ -5,6 +5,20 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [cli-v2.4.1] - 2026-05-19
+
+**Category**: 🔄 Configuration Self-Healing & Legacy Migration
+
+### Fixed
+
+- **Configuration Backward Compatibility**:
+  - **Self-Healing Migration**: Added automated self-healing migration in `ConfigService` to gracefully convert legacy `openai` agent configurations in `.skillsrc` to `codex` (`Agent.Codex`) in memory and update `.skillsrc` on disk.
+  - **Schema Preprocessing**: Updated `SkillConfigSchema` with a Zod preprocessor on the `agents` array to ensure robust schema validation across all parsing contexts.
+
+### Versions
+
+- **CLI**: `2.4.0` → `2.4.1`
+
 # [mcp-v0.4.0] - 2026-05-19
 
 **Category**: 🔌 Workflow Discovery & Execution Engine

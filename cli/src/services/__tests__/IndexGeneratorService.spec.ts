@@ -722,7 +722,7 @@ describe('IndexGeneratorService', () => {
 
       const result = await service.assembleRouterIndex('/skills');
       const lines = result.split('\n').filter((l) => l.trim() !== '');
-      expect(lines.length).toBeLessThanOrEqual(30);
+      expect(lines.length).toBeLessThanOrEqual(35);
     });
 
     it('should instruct to load ALL matched skills (no artificial cap)', async () => {

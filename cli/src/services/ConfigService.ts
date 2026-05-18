@@ -29,7 +29,17 @@ const McpConfigSchema = z.object({
 
 const SkillConfigSchema = z.object({
   registry: z.string().url(),
-  agents: z.array(z.nativeEnum(Agent)).optional(),
+  agents: z.preprocess(
+    (val) => {
+      if (Array.isArray(val)) {
+        return val.map((a) =>
+          typeof a === 'string' && a.toLowerCase() === 'openai' ? 'codex' : a,
+        );
+      }
+      return val;
+    },
+    z.array(z.nativeEnum(Agent)).optional(),
+  ),
   skills: z.record(
     z.string(), // Category name
     z.object({
@@ -74,7 +84,24 @@ export class ConfigService {
 
     try {
       const content = await fs.readFile(configPath, 'utf8');
-      const rawConfig = yaml.load(content);
+      const rawConfig = yaml.load(content) as Record<string, unknown>;
+
+      // Backward compatibility & self-healing migration for legacy 'openai' agent configs
+      if (rawConfig && Array.isArray(rawConfig.agents)) {
+        let needsMigration = false;
+        const updatedAgents = rawConfig.agents.map((agent: unknown) => {
+          if (typeof agent === 'string' && agent.toLowerCase() === 'openai') {
+            needsMigration = true;
+            return Agent.Codex;
+          }
+          return agent;
+        });
+
+        if (needsMigration) {
+          rawConfig.agents = updatedAgents;
+          await fs.outputFile(configPath, yaml.dump(rawConfig));
+        }
+      }
 
       // Validate with Zod
       const parsed = SkillConfigSchema.safeParse(rawConfig);
