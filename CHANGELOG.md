@@ -5,6 +5,23 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [mcp-v0.4.0] - 2026-05-19
+
+**Category**: 🔌 Workflow Discovery & Execution Engine
+
+### Added
+
+- **`agent-skills-standard-mcp`**:
+  - **Procedural Discovery Tools**: Added `list_workflows` to list all available standard operating procedures (e.g., `dev-fix`, `plan-feature`) in `.agents/workflows/`.
+  - **Procedural Execution Tools**: Added `get_workflow` to retrieve exact step-by-step markdown instructions for any specific workflow.
+  - **Authoritative Server Instructions**: Updated `SERVER_INSTRUCTIONS` with explicit guidance commanding agents to invoke `list_workflows()` at the start of any task or session.
+  - **Session Telemetry Auditing**: Expanded `SessionTracker` to log `list_workflows` and `get_workflow` events, ensuring compliance audits verify workflow provenance.
+  - **Workflow Verification**: Added full unit test coverage in `WorkflowIndex.spec.ts` verifying scanning, frontmatter parsing, and error handling.
+
+### Versions
+
+- **MCP**: `0.3.0` → `0.4.0`
+
 # [cli-v2.4.0] - 2026-05-16
 
 **Category**: 🧭 Agentic-AI Learning Integration, Specialist Expansion & SDLC Hardening
