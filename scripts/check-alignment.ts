@@ -18,6 +18,23 @@ const THRESHOLD = (() => {
   return idx !== -1 ? parseInt(process.argv[idx + 1], 10) : 70;
 })();
 
+const FORBIDDEN_ALIGNMENT_MARKER = 'alignment tokens:';
+
+function stripHtmlComments(content: string): string {
+  let res = content;
+  let start = res.indexOf('<!--');
+  while (start !== -1) {
+    const end = res.indexOf('-->', start + 4);
+    if (end !== -1) {
+      res = res.substring(0, start) + res.substring(end + 3);
+    } else {
+      res = res.substring(0, start);
+    }
+    start = res.indexOf('<!--');
+  }
+  return res;
+}
+
 interface Assertion {
   type: string;
   value: string;
@@ -49,9 +66,20 @@ async function main() {
       const stat = await fs.stat(fullPath);
       if (stat.isDirectory()) {
         await scanDir(fullPath);
+      } else if (item === 'SKILL.md') {
+        await checkForbiddenMarkers(fullPath);
       } else if (item === 'evals.json') {
         await checkAlignment(fullPath);
       }
+    }
+  }
+
+  async function checkForbiddenMarkers(skillFile: string) {
+    const content = await fs.readFile(skillFile, 'utf8');
+    if (content.toLowerCase().includes(FORBIDDEN_ALIGNMENT_MARKER)) {
+      failures.push(
+        `${path.relative(skillsDir, path.dirname(skillFile))}: forbidden alignment marker in SKILL.md`,
+      );
     }
   }
 
@@ -65,7 +93,8 @@ async function main() {
     }
 
     const evalsJson: EvalsJson = await fs.readJson(evalsPath);
-    const skillContent = (await fs.readFile(skillFile, 'utf8')).toLowerCase();
+    const rawContent = await fs.readFile(skillFile, 'utf8');
+    const skillContent = stripHtmlComments(rawContent).toLowerCase();
 
     let total = 0;
     let matched = 0;

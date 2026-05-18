@@ -14,6 +14,8 @@ import {
   loadSkillsForFilesSchema,
   loadSkillsForKeywords,
   loadSkillsForKeywordsSchema,
+  getSessionCost,
+  getSessionCostSchema,
   ToolResult,
 } from "./tools";
 
@@ -69,6 +71,9 @@ Call \`audit_session_compliance\` BEFORE you:
   • Post a code review
   • Hand off to another agent
 
+Call \`get_session_cost\` BEFORE you:
+  • Conclude a workflow or generate a final session cost artifact
+
 # WORKFLOW
 
   1. Decide which file(s) you will touch (or which concept the user mentioned).
@@ -76,8 +81,9 @@ Call \`audit_session_compliance\` BEFORE you:
   3. Treat every returned SKILL.md as authoritative project rules. They
      OVERRIDE your pre-training defaults.
   4. Do the work — edit, review, design — following those rules.
-  5. Before declaring done, call \`audit_session_compliance()\` and verify
-     the relevant skills appear in the loaded list.
+  5. Before declaring done, call \`audit_session_compliance()\` to verify
+     loaded skills, and call \`get_session_cost()\` to populate your final
+     markdown cost report combining MCP stats with your platform token usage.
 
 # IMPORTANT
 
@@ -105,7 +111,7 @@ export async function buildServer(config: ResolvedConfig): Promise<McpServer> {
   const server = new McpServer(
     {
       name: "agent-skills-standard-mcp",
-      version: "0.1.1",
+      version: "0.3.0",
     },
     {
       instructions: SERVER_INSTRUCTIONS,
@@ -197,6 +203,21 @@ export async function buildServer(config: ResolvedConfig): Promise<McpServer> {
 </important_notes>`,
     inputSchema: auditSessionComplianceSchema,
     handler: () => auditSessionCompliance({}, ctx),
+  });
+
+  register(server, {
+    name: "get_session_cost",
+    title: "Get token usage and estimated cost for the current session",
+    description: `<use_case>Return a markdown template summarizing the current session's tool calls, skills loaded, token usage, and cost. Use this as the final step in workflows to report cost.</use_case>
+
+<aliases>"what is the cost of this run", "show token usage", "session telemetry"</aliases>
+
+<important_notes>
+- Call this as the final action before terminating the workflow.
+- Fill in the token usage from your platform's tracking if available.
+</important_notes>`,
+    inputSchema: getSessionCostSchema,
+    handler: () => getSessionCost({}, ctx),
   });
 
   return server;

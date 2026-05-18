@@ -17,15 +17,23 @@ skills:
       - common-mobile-animation
       - common-mobile-ux-core
       - common-observability
+  quality-engineering:
+    ref: quality-engineering-v1.5.0
 custom_overrides: []
 workflows:
+  - sdlc
+  - brainstorm-feature
   - code-review
   - codebase-review
+  - design-solution
+  - implementation-readiness
   - plan-feature
+  - review-ticket
   - skill-benchmark
   - pentest
   - dev-fix
   - implement-feature
+  - verify-work
   - verify-bug
 mcp:
   enabled: true
