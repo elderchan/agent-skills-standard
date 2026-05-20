@@ -5,6 +5,19 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [cli-v2.4.3] - 2026-05-20
+
+**Category**: Release Readiness & CLI Packaging
+
+### Fixed
+
+- **Packaged CLI Version**: Updated the release flow so the built `ags` binary reports the published version after packaging.
+
+### Versions
+
+- **CLI**: `2.4.2` → `2.4.3`
+- **Root**: `2.4.2` → `2.4.3`
+
 # [cli-v2.4.2] - 2026-05-19
 
 **Category**: Token Optimization & Redundancy Reduction
