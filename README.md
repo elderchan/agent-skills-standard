@@ -176,16 +176,17 @@ Use both when you want enforcement receipts: the CLI installs the rules, the MCP
 
 The registry now ships a compact lifecycle that agents can run natively after sync:
 
-| Stage      | Synced Workflow                 | Output                       |
-| :--------- | :------------------------------ | :--------------------------- |
-| Route      | `sdlc`                          | next workflow and blockers   |
-| Brainstorm | `brainstorm-feature`            | `product-brief.md`           |
-| Plan       | `plan-feature`                  | PRD, decisions, task slices  |
-| Design     | `design-solution`               | architecture, contracts, ADR |
-| Readiness  | `implementation-readiness`      | go/no-go before code         |
-| Build      | `implement-feature` / `dev-fix` | implementation handoff       |
-| Review     | `review-ticket`                 | multi-lens PR/ticket verdict |
-| Verify     | `verify-work` / `verify-bug`    | `walkthrough.md` evidence    |
+| Stage      | Synced Workflow                 | Output                        |
+| :--------- | :------------------------------ | :---------------------------- |
+| Route      | `sdlc`                          | next workflow and blockers    |
+| Brainstorm | `brainstorm-feature`            | `product-brief.md`            |
+| Plan       | `plan-feature`                  | PRD, decisions, task slices   |
+| Design     | `design-solution`               | architecture, contracts, ADR  |
+| Readiness  | `implementation-readiness`      | go/no-go before code          |
+| Build      | `implement-feature` / `dev-fix` | implementation handoff        |
+| Review     | `review-ticket`                 | multi-lens PR/ticket verdict  |
+| Verify     | `verify-work` / `verify-bug`    | `walkthrough.md` evidence     |
+| Security   | `pentest` / `security-test`     | hacker report, PoC, SAST logs |
 
 ### Session Telemetry
 
@@ -212,7 +213,7 @@ Every skill is audited for token efficiency (averaging ~500 tokens) and tested w
 
 | Stack                | Key Skills                                    | Version  | Skills |
 | :------------------- | :-------------------------------------------- | :------- | :----- |
-| **Common Patterns**  | Best Practices, Security, TDD, Error Handling | `v2.0.6` | 34     |
+| **Common Patterns**  | Best Practices, Security, TDD, Error Handling | `v2.0.8` | 36     |
 | **Flutter**          | BLoC, Riverpod, Architecture, Concurrency     | `v1.7.1` | 22     |
 | **React**            | Hooks, Performance, State Management          | `v1.3.5` | 8      |
 | **React Native**     | Architecture, Navigation, Performance         | `v1.4.4` | 13     |
@@ -233,7 +234,7 @@ Every skill is audited for token efficiency (averaging ~500 tokens) and tested w
 | **Dart**             | Null Safety, Sealed Classes                   | `v1.3.5` | 3      |
 | **Database**         | PostgreSQL, MongoDB, Redis                    | `v1.3.4` | 3      |
 | **Quality Engineer** | BA, TDD, Zephyr, Test Gen                     | `v1.5.0` | 7      |
-| **Specialists**      | Jira, Review, QA, ADO, Zephyr, Confluence     | `v1.1.0` | 13     |
+| **Specialists**      | Jira, Review, QA, ADO, Zephyr, Confluence     | `v1.1.2` | 16     |
 
 > Full skill list with token metrics: [Skills Directory](./skills/README.md) | [Benchmark Report](./benchmark-report.md) | [Public Proof](./docs/public-proof.md)
 
@@ -277,6 +278,8 @@ workflows:
   - design-solution
   - implement-feature
   - verify-work
+  - pentest
+  - security-test
   - deploy-release
   - publish-notes
   - retro-learn
@@ -495,15 +498,16 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for design details and [CLI Architectur
 
 ### 📜 Benchmark History
 
-| Version | Date | Skills | Avg Tokens | Savings (%) | Report |
-| --- | --- | --- | --- | --- | --- |
-| v2.4.1 | 2026-05-18 | 247 | 540 | 85% | [Report](benchmarks/archive/v2.4.1.md) |
-| v2.4.0 | 2026-05-14 | 246 | 540 | 85% | [Report](benchmarks/archive/v2.4.0.md) |
-| v2.3.0 | 2026-05-13 | 246 | 540 | 85% | [Report](benchmarks/archive/v2.3.0.md) |
-| v2.2.2 | 2026-05-09 | 249 | 539 | 85% | [Report](benchmarks/archive/v2.2.2.md) |
-| v2.2.0 | 2026-04-22 | 242 | 538 | 85% | [Report](benchmarks/archive/v2.2.0.md) |
-| v2.1.2 | 2026-04-11 | 237 | 516 | 86% | [Report](benchmarks/archive/v2.1.2.md) |
-| v2.1.1 | 2026-04-11 | 237 | 516 | 86% | [Report](benchmarks/archive/v2.1.1.md) |
-| v2.1.0 | 2026-04-04 | 237 | 526 | 86% | [Report](benchmarks/archive/v2.1.0.md) |
-| v2.0.1 | 2026-03-30 | 238 | 527 | 86% | [Report](benchmarks/archive/v2.0.1.md) |
-| v2.0.0 | 2026-03-25 | 235 | 523 | 86% | [Report](benchmarks/archive/v2.0.0.md) |
+| Version | Date       | Skills | Avg Tokens | Savings (%) | Report                                 |
+| ------- | ---------- | ------ | ---------- | ----------- | -------------------------------------- |
+| v2.4.2  | 2026-05-19 | 247    | 540        | 85%         | [Report](benchmarks/archive/v2.4.2.md) |
+| v2.4.1  | 2026-05-18 | 247    | 540        | 85%         | [Report](benchmarks/archive/v2.4.1.md) |
+| v2.4.0  | 2026-05-14 | 246    | 540        | 85%         | [Report](benchmarks/archive/v2.4.0.md) |
+| v2.3.0  | 2026-05-13 | 246    | 540        | 85%         | [Report](benchmarks/archive/v2.3.0.md) |
+| v2.2.2  | 2026-05-09 | 249    | 539        | 85%         | [Report](benchmarks/archive/v2.2.2.md) |
+| v2.2.0  | 2026-04-22 | 242    | 538        | 85%         | [Report](benchmarks/archive/v2.2.0.md) |
+| v2.1.2  | 2026-04-11 | 237    | 516        | 86%         | [Report](benchmarks/archive/v2.1.2.md) |
+| v2.1.1  | 2026-04-11 | 237    | 516        | 86%         | [Report](benchmarks/archive/v2.1.1.md) |
+| v2.1.0  | 2026-04-04 | 237    | 526        | 86%         | [Report](benchmarks/archive/v2.1.0.md) |
+| v2.0.1  | 2026-03-30 | 238    | 527        | 86%         | [Report](benchmarks/archive/v2.0.1.md) |
+| v2.0.0  | 2026-03-25 | 235    | 523        | 86%         | [Report](benchmarks/archive/v2.0.0.md) |
