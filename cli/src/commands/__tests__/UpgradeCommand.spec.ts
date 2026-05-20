@@ -53,8 +53,31 @@ describe('UpgradeCommand', () => {
   });
 
   it('should perform upgrade using detected package manager (pnpm)', async () => {
-    vi.mocked(execSync).mockReturnValueOnce('2.0.0\n'); // version check
     vi.spyOn(upgradeCommand, 'detectPackageManager').mockReturnValue('pnpm');
+
+    vi.mocked(execSync).mockImplementation((command: unknown) => {
+      const text = String(command);
+      if (text.includes('npm view agent-skills-standard version')) {
+        return '2.0.0\n' as any;
+      }
+      if (text.startsWith('pnpm add -g agent-skills-standard@2.0.0')) {
+        return '' as any;
+      }
+      if (text === 'pnpm root -g') {
+        return '/Users/test/Library/pnpm/global/5/node_modules\n' as any;
+      }
+      if (text.startsWith('node -p')) {
+        return '2.0.0\n' as any;
+      }
+      if (text === 'ags -V') {
+        return '2.0.0\n' as any;
+      }
+      if (text === 'type -a ags') {
+        return 'ags is /Users/test/Library/pnpm/ags\n' as any;
+      }
+
+      return '' as any;
+    });
 
     await upgradeCommand.run({});
 
@@ -64,6 +87,45 @@ describe('UpgradeCommand', () => {
     );
     expect(consoleLogMock).toHaveBeenCalledWith(
       expect.stringContaining('Successfully upgraded to v2.0.0!'),
+    );
+  });
+
+  it('should report pnpm install success even if the shell shim is stale', async () => {
+    vi.spyOn(upgradeCommand, 'detectPackageManager').mockReturnValue('pnpm');
+
+    vi.mocked(execSync).mockImplementation((command: unknown) => {
+      const text = String(command);
+      if (text.includes('npm view agent-skills-standard version')) {
+        return '2.0.0\n' as any;
+      }
+      if (text.startsWith('pnpm add -g agent-skills-standard@2.0.0')) {
+        return '' as any;
+      }
+      if (text === 'pnpm root -g') {
+        return '/Users/test/Library/pnpm/global/5/node_modules\n' as any;
+      }
+      if (text.startsWith('node -p')) {
+        return '2.0.0\n' as any;
+      }
+      if (text === 'ags -V') {
+        return '1.0.0\n' as any;
+      }
+      if (text === 'type -a ags') {
+        return 'ags is /Users/test/Library/pnpm/bin/ags\n' as any;
+      }
+
+      return '' as any;
+    });
+
+    await upgradeCommand.run({});
+
+    expect(consoleLogMock).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "pnpm installed v2.0.0, but 'ags -V' still reports v1.0.0.",
+      ),
+    );
+    expect(consoleLogMock).toHaveBeenCalledWith(
+      expect.stringContaining('stale shim or PATH entry'),
     );
   });
 

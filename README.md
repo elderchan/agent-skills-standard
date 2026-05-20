@@ -6,7 +6,7 @@
 
 **The portable SDLC standards layer for AI coding agents. Sync once, then work in your own runtime.**
 
-**Current release:** `v2.4.3` — packaged `ags -V` now matches the published CLI version.
+**Current release:** `v2.4.4` — packaged `ags -V` now matches the published CLI version.
 
 259 ready-to-use coding standards for **Cursor, Claude Code, GitHub Copilot, Gemini, Windsurf, Trae, Kiro, Roo** and more — synced, versioned, and optimized to use **85% fewer tokens** than traditional prompt engineering.
 
@@ -15,6 +15,8 @@ npx agent-skills-standard@latest init
 npx agent-skills-standard@latest sync
 # Done. Your AI now has portable team standards and SDLC workflows.
 ```
+
+If `ags -V` still shows an old version after reinstalling, check your PATH order. `~/Library/pnpm` must come before `~/Library/pnpm/bin`, then run `hash -r` and verify with `ags -V` again.
 
 ---
 

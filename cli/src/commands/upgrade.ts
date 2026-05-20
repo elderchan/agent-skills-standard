@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import path from 'path';
 import pc from 'picocolors';
 import pkg from '../../package.json';
 
@@ -79,44 +80,105 @@ export class UpgradeCommand {
         execSync(fallbackCmd, { stdio: 'inherit' });
       }
 
-      // Soft Verification
-      try {
-        const output = execSync('ags -V', {
-          encoding: 'utf8',
-          stdio: 'pipe',
-        }).trim();
-        const lines = output.split('\n');
-        const installedVersion = lines[lines.length - 1].trim();
+      if (pm === 'pnpm') {
+        const installedVersion = this.getInstalledVersionFromPnpm(latestVersion);
 
-        if (installedVersion.includes(latestVersion)) {
-          console.log(
-            pc.green(`✅ Successfully upgraded to v${latestVersion}!`),
-          );
-        } else {
+        if (installedVersion !== latestVersion) {
           console.log(
             '\n' +
-              pc.yellow(
-                `⚠️  Installation complete, but 'ags -V' still reports v${installedVersion}.`,
+              pc.red(
+                `❌ pnpm install completed, but the installed package still reports v${installedVersion ?? 'unknown'}.`,
               ),
           );
           console.log(
             pc.gray(
-              '   This is common if multiple versions are installed or your shell needs a restart.',
+              '   This means the global install itself is stale or incomplete, not just the shell shim.',
             ),
           );
+          this.printShellMismatchHint();
+          return;
+        }
+
+        try {
+          const output = execSync('ags -V', {
+            encoding: 'utf8',
+            stdio: 'pipe',
+          }).trim();
+          const lines = output.split('\n');
+          const shellVersion = lines[lines.length - 1].trim();
+
+          if (shellVersion.includes(latestVersion)) {
+            console.log(
+              pc.green(`✅ Successfully upgraded to v${latestVersion}!`),
+            );
+          } else {
+            console.log(
+              '\n' +
+                pc.yellow(
+                  `⚠️  pnpm installed v${latestVersion}, but 'ags -V' still reports v${shellVersion}.`,
+                ),
+            );
+            console.log(
+              pc.gray(
+                '   Your shell is still resolving a stale shim or PATH entry.',
+              ),
+            );
+            this.printShellMismatchHint();
+          }
+        } catch {
+          console.log(pc.green('\n✅ Upgrade command finished.'));
           console.log(
-            pc.cyan(
-              `👉 Recommendation: Restart your terminal or run: ${pc.bold(this.getUpgradeCommand(pm, latestVersion) + ' --force')}`,
+            pc.gray(
+              "   (Installed version verified via pnpm; please check the shell command with 'ags -V')",
             ),
           );
         }
-      } catch {
-        console.log(pc.green('\n✅ Upgrade command finished.'));
-        console.log(
-          pc.gray(
-            "   (Unable to verify version automatically, please check with 'ags -V')",
-          ),
-        );
+      } else {
+        // Soft Verification
+        try {
+          const output = execSync('ags -V', {
+            encoding: 'utf8',
+            stdio: 'pipe',
+          }).trim();
+          const lines = output.split('\n');
+          const installedVersion = lines[lines.length - 1].trim();
+
+          if (installedVersion.includes(latestVersion)) {
+            console.log(
+              pc.green(`✅ Successfully upgraded to v${latestVersion}!`),
+            );
+          } else {
+            const resolvedBinary = execSync('type -a ags', {
+              encoding: 'utf8',
+              stdio: 'pipe',
+            }).trim();
+
+            console.log(
+              '\n' +
+                pc.yellow(
+                  `⚠️  Installation complete, but 'ags -V' still reports v${installedVersion}.`,
+                ),
+            );
+            console.log(
+              pc.gray(
+                '   This usually means your shell is still resolving a stale shim or PATH entry.',
+              ),
+            );
+            console.log(pc.gray(`   Resolved binary:\n${resolvedBinary}`));
+            console.log(
+              pc.cyan(
+                `👉 Recommendation: make sure ${pc.bold('~/Library/pnpm')} comes before ${pc.bold('~/Library/pnpm/bin')} in PATH, then run ${pc.bold('hash -r')} and recheck with 'ags -V'.`,
+              ),
+            );
+          }
+        } catch {
+          console.log(pc.green('\n✅ Upgrade command finished.'));
+          console.log(
+            pc.gray(
+              "   (Unable to verify version automatically, please check with 'ags -V')",
+            ),
+          );
+        }
       }
 
       console.log(
@@ -179,6 +241,49 @@ export class UpgradeCommand {
         // Default to npm install -g
         return `npm install -g agent-skills-standard@${version}`;
     }
+  }
+
+  private getInstalledVersionFromPnpm(
+    version: string,
+  ): string | null {
+    try {
+      const globalRoot = execSync('pnpm root -g', {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }).trim();
+      const packageJsonPath = path.join(
+        globalRoot,
+        '.pnpm',
+        `agent-skills-standard@${version}`,
+        'node_modules',
+        'agent-skills-standard',
+        'package.json',
+      );
+      const output = execSync(
+        `node -p "require(${JSON.stringify(packageJsonPath)}).version"`,
+        {
+          encoding: 'utf8',
+          stdio: 'pipe',
+        },
+      ).trim();
+      return output || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private printShellMismatchHint(): void {
+    const resolvedBinary = execSync('type -a ags', {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }).trim();
+
+    console.log(pc.gray(`   Resolved binary:\n${resolvedBinary}`));
+    console.log(
+      pc.cyan(
+        `👉 Recommendation: make sure ${pc.bold('~/Library/pnpm')} comes before ${pc.bold('~/Library/pnpm/bin')} in PATH, then run ${pc.bold('hash -r')} and recheck with 'ags -V'.`,
+      ),
+    );
   }
 
   private printManualInstructions(
