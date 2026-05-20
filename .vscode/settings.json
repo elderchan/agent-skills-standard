@@ -4,7 +4,8 @@
     "npx vitest": true,
     "rtk": true,
     "type": true,
-    "ags": true
+    "ags": true,
+    "pnpm": true
   },
   "[markdown]": {
     "editor.formatOnSave": true,

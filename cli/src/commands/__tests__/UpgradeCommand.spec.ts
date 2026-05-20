@@ -1,8 +1,22 @@
 import { execSync } from 'child_process';
+import { existsSync, readFileSync, unlinkSync } from 'fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import inquirer from 'inquirer';
 
 vi.mock('child_process', () => ({
   execSync: vi.fn(),
+}));
+
+vi.mock('fs', () => ({
+  existsSync: vi.fn(),
+  readFileSync: vi.fn(),
+  unlinkSync: vi.fn(),
+}));
+
+vi.mock('inquirer', () => ({
+  default: {
+    prompt: vi.fn(),
+  },
 }));
 
 // Mock package.json version
@@ -95,27 +109,18 @@ describe('UpgradeCommand', () => {
 
     vi.mocked(execSync).mockImplementation((command: unknown) => {
       const text = String(command);
-      if (text.includes('npm view agent-skills-standard version')) {
-        return '2.0.0\n' as any;
-      }
-      if (text.startsWith('pnpm add -g agent-skills-standard@2.0.0')) {
-        return '' as any;
-      }
-      if (text === 'pnpm root -g') {
-        return '/Users/test/Library/pnpm/global/5/node_modules\n' as any;
-      }
-      if (text.startsWith('node -p')) {
-        return '2.0.0\n' as any;
-      }
-      if (text === 'ags -V') {
-        return '1.0.0\n' as any;
-      }
-      if (text === 'type -a ags') {
-        return 'ags is /Users/test/Library/pnpm/bin/ags\n' as any;
-      }
-
+      if (text.includes('npm view agent-skills-standard version')) return '2.0.0\n' as any;
+      if (text.startsWith('pnpm add -g agent-skills-standard@2.0.0')) return '' as any;
+      if (text === 'pnpm root -g') return '/Users/test/Library/pnpm/global/5/node_modules\n' as any;
+      if (text.startsWith('node -p')) return '2.0.0\n' as any;
+      if (text === 'ags -V') return '1.0.0\n' as any;
+      if (text === 'type -a ags') return 'ags is /Users/test/Library/pnpm/bin/ags\n' as any;
+      if (text === 'pnpm bin -g') return '/Users/test/Library/pnpm\n' as any;
       return '' as any;
     });
+
+    // No stale shim file — falls through to PATH hint
+    vi.mocked(existsSync).mockReturnValue(false);
 
     await upgradeCommand.run({});
 
@@ -126,6 +131,41 @@ describe('UpgradeCommand', () => {
     );
     expect(consoleLogMock).toHaveBeenCalledWith(
       expect.stringContaining('stale shim or PATH entry'),
+    );
+  });
+
+  it('should detect and remove a stale pnpm shim after upgrade', async () => {
+    vi.spyOn(upgradeCommand, 'detectPackageManager').mockReturnValue('pnpm');
+
+    vi.mocked(execSync).mockImplementation((command: unknown) => {
+      const text = String(command);
+      if (text.includes('npm view agent-skills-standard version')) return '2.0.0\n' as any;
+      if (text.startsWith('pnpm add -g agent-skills-standard@2.0.0')) return '' as any;
+      if (text === 'pnpm root -g') return '/Users/test/Library/pnpm/global/5/node_modules\n' as any;
+      if (text.startsWith('node -p')) return '2.0.0\n' as any;
+      if (text === 'ags -V') return '1.0.0\n' as any;
+      if (text === 'type -a ags') return 'ags is /Users/test/Library/pnpm/bin/ags\n' as any;
+      if (text === 'pnpm bin -g') return '/Users/test/Library/pnpm\n' as any;
+      return '' as any;
+    });
+
+    // Stale shim exists at <pnpm-bin>/bin/ags; correct shim at <pnpm-bin>/ags
+    vi.mocked(existsSync).mockImplementation((p) => {
+      const s = String(p);
+      return s.endsWith('/bin/ags') || s.endsWith('/pnpm/ags');
+    });
+    // Shim content does NOT contain the new version tag → stale
+    vi.mocked(readFileSync).mockReturnValue(
+      'exec node "$basedir/../global/v11/abc123/node_modules/agent-skills-standard/dist/index.js"',
+    );
+    // User confirms removal
+    vi.mocked(inquirer.prompt).mockResolvedValue({ remove: true });
+
+    await upgradeCommand.run({});
+
+    expect(unlinkSync).toHaveBeenCalledWith('/Users/test/Library/pnpm/bin/ags');
+    expect(consoleLogMock).toHaveBeenCalledWith(
+      expect.stringContaining('Stale shim removed.'),
     );
   });
 

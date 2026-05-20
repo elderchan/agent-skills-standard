@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import dotenv from 'dotenv';
+import pc from 'picocolors';
+import pkg from '../package.json';
 import { FeedbackCommand } from './commands/feedback';
 import { HooksCommand } from './commands/hooks';
 import { InitCommand } from './commands/init';
@@ -13,6 +15,25 @@ import { ValidateCommand } from './commands/validate-skills';
 // Load .env from current directory (for development and other env vars)
 dotenv.config();
 
+// Detect stale pnpm shim: old pnpm global stores don't embed the version tag
+// in the shim path (e.g. /global/v11/<hash>/node_modules/...).  When such a
+// shim is executed, `ags -V` always reports an old version even though the
+// package store was updated.  Surface the issue immediately on every invocation
+// so users are not silently misled.
+const _agsExecPath = process.argv[1] ?? '';
+if (
+  _agsExecPath.includes('/pnpm/') &&
+  _agsExecPath.includes('/node_modules/agent-skills-standard/') &&
+  !_agsExecPath.includes(`agent-skills-standard@${pkg.version}`)
+) {
+  process.stderr.write(
+    `\n${pc.yellow('⚠️  ags is running from a stale global shim — reported version will be wrong.')}\n` +
+      `   ${pc.cyan('Quickfix:')} ${pc.bold('npx agent-skills-standard@latest upgrade')} ` +
+      pc.gray('(auto-detects & removes the stale shim)') +
+      '\n\n',
+  );
+}
+
 const program = new Command();
 
 program
@@ -20,7 +41,7 @@ program
   .description(
     'A CLI to manage and sync AI agent skills for Cursor, Claude, Copilot, Windsurf, and more.',
   )
-  .version('2.4.4');
+  .version(pkg.version);
 
 program
   .command('init')

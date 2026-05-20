@@ -1,6 +1,8 @@
 import { execSync } from 'child_process';
+import { existsSync, readFileSync, unlinkSync } from 'fs';
 import path from 'path';
 import pc from 'picocolors';
+import inquirer from 'inquirer';
 import pkg from '../../package.json';
 
 /**
@@ -123,7 +125,7 @@ export class UpgradeCommand {
                 '   Your shell is still resolving a stale shim or PATH entry.',
               ),
             );
-            this.printShellMismatchHint();
+            await this.detectAndFixStaleShim(latestVersion);
           }
         } catch {
           console.log(pc.green('\n✅ Upgrade command finished.'));
@@ -272,18 +274,119 @@ export class UpgradeCommand {
     }
   }
 
+  /**
+   * Shown when the pnpm package store itself is stale/incomplete (Case 1).
+   * Falls back to a resolved-binary hint and PATH guidance.
+   */
   private printShellMismatchHint(): void {
-    const resolvedBinary = execSync('type -a ags', {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    }).trim();
+    try {
+      const resolvedBinary = execSync('type -a ags', {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }).trim();
+      console.log(pc.gray(`   Resolved binary:\n${resolvedBinary}`));
+    } catch {
+      /* non-fatal */
+    }
+    this.printShimPathHint();
+  }
 
-    console.log(pc.gray(`   Resolved binary:\n${resolvedBinary}`));
+  /**
+   * Prints the standard PATH-order fix recommendation.
+   */
+  private printShimPathHint(): void {
     console.log(
       pc.cyan(
-        `👉 Recommendation: make sure ${pc.bold('~/Library/pnpm')} comes before ${pc.bold('~/Library/pnpm/bin')} in PATH, then run ${pc.bold('hash -r')} and recheck with 'ags -V'.`,
+        `👉 Make sure ${pc.bold('~/Library/pnpm')} comes before ${pc.bold('~/Library/pnpm/bin')} in PATH, then run ${pc.bold('hash -r')} and recheck with ${pc.bold('ags -V')}.`,
       ),
     );
+  }
+
+  /**
+   * Called when the pnpm store is correct but `ags -V` still reports an old
+   * version (Case 2 — stale shim).  Attempts to locate and remove the stale
+   * shim file at <pnpm-bin>/bin/ags, which is created by older pnpm versions
+   * using a content-addressed hash path that is never updated on reinstall.
+   */
+  private async detectAndFixStaleShim(latestVersion: string): Promise<void> {
+    // Show resolved binary for diagnostics
+    try {
+      const resolvedBinary = execSync('type -a ags', {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }).trim();
+      console.log(pc.gray(`   Resolved binary:\n${resolvedBinary}`));
+    } catch {
+      /* non-fatal */
+    }
+
+    try {
+      const pnpmBin = execSync('pnpm bin -g', {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }).trim();
+
+      // Old pnpm shims live in <pnpm-bin>/bin/ags; new ones in <pnpm-bin>/ags
+      const staleShimPath = path.join(pnpmBin, 'bin', 'ags');
+
+      if (!existsSync(staleShimPath)) {
+        this.printShimPathHint();
+        return;
+      }
+
+      const shimContent = readFileSync(staleShimPath, 'utf8');
+
+      // If the shim already embeds the correct version tag it is not stale
+      if (shimContent.includes(`agent-skills-standard@${latestVersion}`)) {
+        this.printShimPathHint();
+        return;
+      }
+
+      // Confirm the replacement shim exists before offering to remove the stale one
+      const correctShimPath = path.join(pnpmBin, 'ags');
+      if (!existsSync(correctShimPath)) {
+        console.log(
+          pc.yellow(
+            `⚠️  Correct shim not found at ${correctShimPath}. Re-run: ${pc.bold('pnpm add -g agent-skills-standard@latest')}`,
+          ),
+        );
+        this.printShimPathHint();
+        return;
+      }
+
+      console.log(
+        '\n' + pc.yellow(`🔍 Stale shim detected: ${staleShimPath}`),
+      );
+      console.log(
+        pc.gray(
+          '   It points to an old install path and will always report the wrong version.',
+        ),
+      );
+
+      const { remove } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'remove',
+          message: `Remove stale shim at ${staleShimPath}?`,
+          default: true,
+        },
+      ]);
+
+      if (remove) {
+        unlinkSync(staleShimPath);
+        console.log(pc.green('✅ Stale shim removed.'));
+        console.log(
+          pc.cyan(
+            `   Run ${pc.bold('hash -r')} then ${pc.bold('ags -V')} to confirm the correct version.`,
+          ),
+        );
+      } else {
+        this.printShimPathHint();
+      }
+    } catch {
+      // Non-fatal — fall back to manual guidance
+      this.printShimPathHint();
+    }
   }
 
   private printManualInstructions(
