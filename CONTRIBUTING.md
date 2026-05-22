@@ -56,8 +56,9 @@ Rules:
 2. Use the order: goal, steps, output template.
 3. Do not pre-fill example data.
 4. Put heavy examples or checklists in `references/`.
-5. Add the workflow to `DEFAULT_WORKFLOWS` only when it belongs in the standard SDLC spine.
-6. Run `pnpm audit:sdlc` after changes.
+5. Keep requirement naming explicit for users: BRD-lite (`brainstorm-feature`), PRD (`plan-feature`), SRS/FRS (`design-solution`).
+6. Add the workflow to `DEFAULT_WORKFLOWS` only when it belongs in the standard SDLC spine, and add canonical source at `.agents/workflows/<name>.md`.
+7. Run `pnpm audit:sdlc` after changes.
 
 ## 5. Default Init Standards
 
@@ -98,7 +99,7 @@ pnpm benchmark:report
 We use specialized scripts for releasing components independently:
 
 - `pnpm release-cli`: Bumps `cli/package.json` and updates `CHANGELOG.md`.
-- `pnpm release-skill`: Bumps specific skill versions and updates `skills/metadata.json`.
+- `pnpm release-all-skills`: Syncs and pushes git tags for newly bumped versions in `skills/metadata.json`.
 - `pnpm release-server`: Releases the backend component.
 
 Ensure you update `CHANGELOG.md` manually before running release scripts if significant features were added.

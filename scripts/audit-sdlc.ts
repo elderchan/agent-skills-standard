@@ -1,33 +1,105 @@
 import fs from 'fs-extra';
 import path from 'path';
 import pc from 'picocolors';
+import { DEFAULT_WORKFLOWS } from '../cli/src/constants';
 
 const ROOT = path.join(__dirname, '..');
 const WORKFLOWS_DIR = path.join(ROOT, '.agents', 'workflows');
 const CODEX_SKILLS_DIR = path.join(ROOT, '.codex', 'skills');
 const CODEX_AGENTS_DIR = path.join(ROOT, '.codex', 'agents');
 const PROMPTS_DIR = path.join(ROOT, '.github', 'prompts');
+const QUICK_REFERENCE_FILE = path.join(ROOT, 'docs', 'sdlc-workflow-quick-reference.md');
 
-const REQUIRED_WORKFLOWS = [
-  'sdlc',
-  'brainstorm-feature',
-  'plan-feature',
-  'design-solution',
-  'implementation-readiness',
-  'implement-feature',
-  'review-ticket',
-  'verify-work',
-];
+const REQUIRED_WORKFLOWS = [...new Set(DEFAULT_WORKFLOWS)];
+const REQUIRED_REQUIREMENT_TERMS = ['BRD-lite', 'PRD', 'SRS/FRS'];
+
+interface WorkflowRule {
+  maxLines?: number;
+  requireGoal?: boolean;
+  requireOutputTemplate?: boolean;
+  notes?: string;
+}
+
+/**
+ * Explicit per-workflow rule map defining line count limits and structure requirements.
+ * Documented Exception Policy:
+ * 1. Default limits (80 lines, Goal section, and Output Template section) apply to all standard
+ *    step-by-step tasks (STRICT workflows).
+ * 2. Exceptions are allowed for complex, multi-artifact lifecycles or orchestrators (e.g., dev-fix,
+ *    verify-bug, codebase-review) that generate custom documents/scorecards instead of a single output
+ *    template, or require more verbose steps/context.
+ */
+const WORKFLOW_RULES: Record<string, WorkflowRule> = {
+  // Strict standard tasks (<= 80 lines, must have Goal and Output Template)
+  'sdlc': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'brainstorm-feature': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'plan-feature': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'design-solution': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'implementation-readiness': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'implement-feature': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'review-ticket': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'verify-work': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'deploy-release': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'traceability-audit': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'session-report': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'publish-notes': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+  'retro-learn': { maxLines: 80, requireGoal: true, requireOutputTemplate: true },
+
+  // Exceptions / Complex workflows
+  'code-review': {
+    maxLines: 80,
+    requireGoal: true,
+    requireOutputTemplate: true,
+    notes: 'Standard code review workflow, fits within standard template but uses bold Goal'
+  },
+  'codebase-review': {
+    maxLines: 80,
+    requireGoal: true,
+    requireOutputTemplate: false,
+    notes: 'Codebase-wide audit that produces a custom report format instead of a simple template'
+  },
+  'skill-benchmark': {
+    maxLines: 80,
+    requireGoal: true,
+    requireOutputTemplate: false,
+    notes: 'Benchmarks skill compliance, relies on dynamic scorecards instead of a static output template'
+  },
+  'pentest': {
+    maxLines: 80,
+    requireGoal: true,
+    requireOutputTemplate: true,
+    notes: 'Deep security pentest workflow with structured vulnerability findings'
+  },
+  'dev-fix': {
+    maxLines: 150,
+    requireGoal: false,
+    requireOutputTemplate: false,
+    notes: 'Full developer lifecycle bug-fix manager. Requires custom templates (plan, task, walkthrough) and exceeds 80 lines due to complexity.'
+  },
+  'verify-bug': {
+    maxLines: 100,
+    requireGoal: false,
+    requireOutputTemplate: false,
+    notes: 'Enterprise UAT bug verification flow. Relies on custom Walkthrough templates and exceeds 80 lines due to multi-market/VPN handling.'
+  },
+  'security-test': {
+    maxLines: 90,
+    requireGoal: true,
+    requireOutputTemplate: true,
+    notes: 'High-speed PR security audit check. Has a slightly longer line count limit (90 lines).'
+  }
+};
+
 
 const REQUIRED_SPECIALISTS = [
   'specialist-ac-verifier',
-  'specialist-ado-pr-reviewer',
   'specialist-architecture-guard',
   'specialist-codebase-scout',
   'specialist-confluence-searcher',
   'specialist-integration-test-generator',
   'specialist-jira-analyst',
   'specialist-pr-commenter-batch',
+  'specialist-pr-reviewer',
   'specialist-security-reviewer',
   'specialist-tc-creator',
   'specialist-tdd-implementer',
@@ -76,29 +148,68 @@ async function main() {
   console.log(pc.blue('🔍 Auditing SDLC workflow surface...\n'));
 
   const failures: string[] = [];
+  const workflowEntries = await fs.readdir(WORKFLOWS_DIR, { withFileTypes: true });
+  const canonicalWorkflows = new Set(
+    workflowEntries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
+      .map((entry) => path.basename(entry.name, '.md')),
+  );
 
   for (const workflow of REQUIRED_WORKFLOWS) {
-    const file = path.join(WORKFLOWS_DIR, `${workflow}.md`);
-    if (!(await fs.pathExists(file))) {
+    if (!canonicalWorkflows.has(workflow)) {
       fail(`Missing workflow: ${workflow}`, failures);
       continue;
     }
 
+    const file = path.join(WORKFLOWS_DIR, `${workflow}.md`);
     const content = await fs.readFile(file, 'utf8');
     checkPortableContent(path.relative(ROOT, file), content, failures);
-    const lines = content.trimEnd().split(/\r?\n/).length;
-    if (lines > 80) {
-      fail(`${workflow}.md exceeds 80 lines (${lines})`, failures);
-    } else {
-      pass(`${workflow}.md present (${lines} lines)`);
-    }
+    const rules = WORKFLOW_RULES[workflow];
+    if (rules) {
+      const lines = content.trimEnd().split(/\r?\n/).length;
+      const maxLines = rules.maxLines ?? 80;
+      if (lines > maxLines) {
+        fail(`${workflow}.md exceeds ${maxLines} lines (${lines})`, failures);
+      } else {
+        pass(`${workflow}.md present (${lines} lines)`);
+      }
 
-    if (!content.includes('Goal:')) {
-      fail(`${workflow}.md missing Goal section`, failures);
+      if (rules.requireGoal) {
+        const hasGoal = content.includes('Goal:') || content.includes('Goal**:') || /\*\*Goal\*\*:/i.test(content);
+        if (!hasGoal) {
+          fail(`${workflow}.md missing Goal section`, failures);
+        }
+      }
+
+      if (rules.requireOutputTemplate) {
+        const hasOutputTemplate = content.toLowerCase().includes('output template');
+        if (!hasOutputTemplate) {
+          fail(`${workflow}.md missing Output Template`, failures);
+        }
+      }
+    } else {
+      fail(`Workflow ${workflow} has no rules defined in audit-sdlc.ts`, failures);
     }
-    if (!content.includes('## Output Template')) {
-      fail(`${workflow}.md missing Output Template`, failures);
+  }
+
+  if (await fs.pathExists(QUICK_REFERENCE_FILE)) {
+    const quickRef = await fs.readFile(QUICK_REFERENCE_FILE, 'utf8');
+    for (const workflow of REQUIRED_WORKFLOWS) {
+      if (quickRef.includes(`\`${workflow}\``)) {
+        pass(`quick reference includes ${workflow}`);
+      } else {
+        fail(`Quick reference missing workflow: ${workflow}`, failures);
+      }
     }
+    for (const term of REQUIRED_REQUIREMENT_TERMS) {
+      if (quickRef.includes(term)) {
+        pass(`quick reference includes requirement term: ${term}`);
+      } else {
+        fail(`Quick reference missing requirement term: ${term}`, failures);
+      }
+    }
+  } else {
+    fail('Missing docs/sdlc-workflow-quick-reference.md', failures);
   }
 
   for (const relPath of REQUIRED_RUNTIME_REFERENCES) {
@@ -142,6 +253,12 @@ async function main() {
     for (const entry of entries.filter((item) => item.isDirectory())) {
       const skillFile = path.join(CODEX_SKILLS_DIR, entry.name, 'SKILL.md');
       if (!(await fs.pathExists(skillFile))) continue;
+      if (!canonicalWorkflows.has(entry.name)) {
+        fail(
+          `Generated Codex workflow skill has no canonical source: ${entry.name}`,
+          failures,
+        );
+      }
       const content = await fs.readFile(skillFile, 'utf8');
       checkPortableContent(path.relative(ROOT, skillFile), content, failures);
       if (!content.startsWith('---\n')) {
