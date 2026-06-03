@@ -5,6 +5,18 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [mcp-v0.4.1] - 2026-06-03
+
+**Category**: MCP Skill loader improvement
+
+### Changed
+
+- **MCP Skill Lookup Compatibility**: `load_skills_for_files` is wrong targeting to metadata.json file not include on sync command to user machine, so it not load the correct skills. Improve to using _INDEX.MD to routing correct places skills
+
+### Versions
+
+- **Common Skills**: `0.4.0` → `0.4.1`
+
 # [cli-v2.4.6] - 2026-05-25
 
 **Category**: SDLC Requirements Template Hardening
