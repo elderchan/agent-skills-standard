@@ -213,6 +213,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `pnpm check-alignment --threshold 90` still fails on 71 older framework skills; that remains a separate framework quality-wave backlog.
 
+## [cli-v2.4.8] - 2026-06-15
+
+**Category**: CLI Tool
+
+### Maintenance
+- chore: bump version to 2.4.8 and update documentation (#95)
+
 ## [cli-v2.2.3] - 2026-05-10
 
 **Category**: 🔄 Workflow Sync Optimization & Registry Reliability
