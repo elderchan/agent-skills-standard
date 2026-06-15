@@ -370,7 +370,7 @@
       }
     },
     "common": {
-      "version": "2.1.1",
+      "version": "2.2.0",
       "last_updated": "2026-06-11",
       "tag_prefix": "common-v",
       "token_metrics": {
